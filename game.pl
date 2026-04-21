@@ -45,6 +45,7 @@ describe(storage_room) :-
     write('The storage room is cluttered with old crates. Marcus is standing in the corner, looking pale.'), nl.
 
 /* Basic Engine */
+help :- instructions.
 quit :- halt.
 
 n :- go(n).
@@ -64,6 +65,7 @@ look :-
 
 instructions :-
     write('Commands:
+    help. -> show instructions
      n. -> go north
      s. -> go south 
      look. -> look around
