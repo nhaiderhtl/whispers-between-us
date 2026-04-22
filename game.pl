@@ -20,21 +20,40 @@ talk :-
 character_at(marcus, storage_room).
 
 interact(marcus) :-
+    trust(marcus, neutral),
     write('Marcus: "Did you hear that? I think something is in the walls."'), nl,
-    write('Do you trust him? (trust_him. / doubt_him.)'), nl.
+    write('Do you trust him? (trust_him. / doubt_him.)'), nl, !.
+
+interact(marcus) :-
+    trust(marcus, trusted),
+    write('Marcus looks at you. "We need to keep moving. Together."'), nl, !.
+
+interact(marcus) :-
+    trust(marcus, doubted),
+    write('Marcus stays away from you, watching the walls in silence.'), nl, !.
 
 /* Decisions */
 trust_him :-
     i_am_at(storage_room),
+    trust(marcus, neutral),
     retract(trust(marcus, _)),
     assert(trust(marcus, trusted)),
     write('You nod. Marcus looks relieved. "We stay together then."'), nl, !.
 
+trust_him :-
+    i_am_at(storage_room),
+    write('You have already made your decision regarding Marcus.'), nl, !.
+
 doubt_him :-
     i_am_at(storage_room),
+    trust(marcus, neutral),
     retract(trust(marcus, _)),
     assert(trust(marcus, doubted)),
     write('You look at him skeptically. Marcus narrows his eyes. "Fine. Watch your own back."'), nl, !.
+
+doubt_him :-
+    i_am_at(storage_room),
+    write('You have already made your decision regarding Marcus.'), nl, !.
 
 /* Descriptions */
 describe(dark_hallway) :-
