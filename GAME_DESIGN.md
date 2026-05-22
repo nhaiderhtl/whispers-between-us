@@ -353,7 +353,8 @@ Midnight is the limit. Mechanic: actions consume time (implicit). Ringing the be
 | read_item(X) mechanic | ✅ all documents have full readable content |
 | confront_jakob | ✅ unlocks only if tire tracks + diary clue found |
 | Trust decisions all characters | ✅ trust_her, doubt_her, trust_hilde, doubt_hilde, trust_jakob, doubt_jakob, trust_benedikt, doubt_benedikt, trust_otto, doubt_otto |
-| Trust system (5 levels) | ⬜ planned |
-| Time pressure / midnight | ⬜ planned |
-| Endings | ⬜ planned |
-| Ring bell puzzle | ⬜ planned |
+| Trust system (5 levels) | ✅ implemented (`trust_value/2` ladder, `raise_trust`/`lower_trust`, `reassure`/`confide` reach `devoted`) |
+| Time pressure / midnight | ✅ implemented (`game_time/1` + `deadline/1`, every move costs 5 min, `time.` shows clock) |
+| Endings | ✅ implemented (A `escape.`, B `confront_erna.`, C midnight or `follow_jakob.` while devoted) |
+| Ring bell puzzle | ✅ implemented (`ring_bell.` needs rope, pushes deadline +25 min) |
+| Replay | ✅ implemented (`reset_state` — `start.` fully resets a finished game) |

@@ -47,5 +47,13 @@ You just have to figure out who you can trust — before midnight comes.
 | `drop(X).` | Put down an item |
 | `inventory.` | Show carried items |
 | `notes.` | Show discovered clues |
+| `time.` | Check the clock — midnight is the deadline |
+| `ring_bell.` | Ring the church bell to buy time (needs rope) |
+| `reassure(X).` / `confide(X).` | Deepen your bond with a character |
+| `confront_jakob.` / `confront_erna.` | Force the truth, with the right evidence |
+| `follow_jakob.` | Let Jakob lead you out |
+| `escape.` | Take the forest trail out (from the forest) |
 | `help.` | Show all commands |
 | `quit.` | Quit the game |
+
+> **Three endings.** Midnight ends everything. Trust the wrong person and it ends sooner. Ring the bell, gather proof, and you may leave on your own terms — or slip out alone through the trees.

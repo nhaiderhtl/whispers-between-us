@@ -1,6 +1,9 @@
-:- dynamic i_am_at/1, at/2, holding/1, trust/2, looked_at/2, clue/1.
+:- dynamic i_am_at/1, at/2, holding/1, trust/2, looked_at/2, clue/1,
+           game_time/1, deadline/1, bell_rung/0, game_over/0.
 :- retractall(at(_, _)), retractall(i_am_at(_)), retractall(holding(_)),
-   retractall(trust(_, _)), retractall(looked_at(_, _)), retractall(clue(_)).
+   retractall(trust(_, _)), retractall(looked_at(_, _)), retractall(clue(_)),
+   retractall(game_time(_)), retractall(deadline(_)),
+   retractall(bell_rung), retractall(game_over).
 
 /* ===================== Initial State ===================== */
 
@@ -10,6 +13,10 @@ trust(hilde,    neutral).
 trust(jakob,    neutral).
 trust(benedikt, neutral).
 trust(otto,     neutral).
+
+/* Time: minutes elapsed since 10 PM. Midnight = deadline (120 min). */
+game_time(0).
+deadline(120).
 
 /* ===================== Map ===================== */
 
@@ -214,6 +221,7 @@ character_at(benedikt, church_interior).
 character_at(mia,      graveyard).
 character_at(otto,     mayors_house).
 
+talk :- game_over, !, game_over_notice.
 talk :-
     i_am_at(Place),
     character_at(Name, Place),
@@ -414,6 +422,102 @@ doubt_otto :-
 doubt_otto :- i_am_at(mayors_house),
     write('You have already made your decision.'), nl, !.
 
+/* ===================== Trust Ladder (5 levels) ===================== */
+/* feared(-2) < doubted(-1) < neutral(0) < trusted(+1) < devoted(+2) */
+
+trust_value(feared,   -2).
+trust_value(doubted,  -1).
+trust_value(neutral,   0).
+trust_value(trusted,   1).
+trust_value(devoted,   2).
+
+raise_trust(Char) :-
+    trust(Char, Cur), trust_value(Cur, V),
+    V1 is min(V + 1, 2), trust_value(New, V1),
+    retract(trust(Char, _)), assert(trust(Char, New)).
+
+lower_trust(Char) :-
+    trust(Char, Cur), trust_value(Cur, V),
+    V1 is max(V - 1, -2), trust_value(New, V1),
+    retract(trust(Char, _)), assert(trust(Char, New)).
+
+/* Reaching devoted — deepening an existing trust. */
+
+reassure(hilde) :-
+    i_am_at(inn), trust(hilde, trusted),
+    raise_trust(hilde),
+    write('"You can count on me," you tell her. For a moment she believes it.'), nl,
+    write('"Then do not leave without me," she says. "Promise me that."'), nl, !.
+reassure(hilde) :-
+    i_am_at(inn), trust(hilde, devoted),
+    write('She has already decided to trust you with everything.'), nl, !.
+reassure(hilde) :-
+    i_am_at(inn),
+    write('She studies you. It is not the right moment for promises.'), nl, !.
+reassure(jakob) :-
+    i_am_at(barn), trust(jakob, trusted),
+    raise_trust(jakob),
+    write('"I believe you, Jakob. Get me out of here — whatever it takes."'), nl,
+    write('Relief floods his face. Or something wearing relief''s shape.'), nl,
+    write('"Then stay close. Do exactly what I say."'), nl, !.
+reassure(jakob) :-
+    i_am_at(barn), trust(jakob, devoted),
+    write('Jakob already has your complete trust. Perhaps too much of it.'), nl, !.
+reassure(jakob) :-
+    i_am_at(barn),
+    write('He has not earned that kind of faith from you.'), nl, !.
+reassure(_) :-
+    write('There is no one here to reassure.'), nl.
+
+confide(benedikt) :-
+    i_am_at(church_interior), trust(benedikt, trusted),
+    clue('Church record: A stranger must witness and choose freely. If kept against their will, something breaks. The record is incomplete.'),
+    raise_trust(benedikt),
+    write('You tell him what the record said — the part about choosing freely.'), nl,
+    write('Something in him settles. "Then perhaps it is not too late."'), nl, !.
+confide(benedikt) :-
+    i_am_at(church_interior), trust(benedikt, trusted),
+    write('He waits. You sense he wants proof you understand — read the church record first.'), nl, !.
+confide(benedikt) :-
+    i_am_at(church_interior),
+    write('He does not yet trust you enough to hear it.'), nl, !.
+confide(_) :-
+    write('There is no one here to confide in.'), nl.
+
+/* ===================== Time & Bell ===================== */
+
+advance_time(_) :- game_over, !.
+advance_time(N) :-
+    game_time(T), retract(game_time(T)),
+    T1 is T + N, assert(game_time(T1)),
+    deadline(D),
+    (T1 >= D -> ending_c ; true).
+
+print_time :-
+    game_time(T), Total is 1320 + T,
+    H is (Total // 60) mod 24, M is Total mod 60,
+    format('The church clock reads ~|~`0t~d~2|:~|~`0t~d~2|.~n', [H, M]).
+
+time :- print_time.
+
+ring_bell :-
+    i_am_at(church_interior), bell_rung,
+    write('The bell still echoes. It will not buy you more time twice.'), nl, !.
+ring_bell :-
+    i_am_at(church_interior), holding(rope),
+    assert(bell_rung),
+    deadline(D), retract(deadline(D)), D1 is D + 25, assert(deadline(D1)),
+    write('You haul on the rope. The old bell resists, then swings —'), nl,
+    write('a single deep toll rolls out over Kalmbach.'), nl,
+    write('Somewhere a door slams. The procession will be late tonight.'), nl,
+    record_clue('You rang the church bell. The procession is delayed — more time.'), !.
+ring_bell :-
+    i_am_at(church_interior),
+    write('There is a bell rope frame above, but no rope to reach it.'), nl,
+    write('You need a rope.'), nl, !.
+ring_bell :-
+    write('There is no bell here.'), nl.
+
 /* ===================== Take / Drop / Inventory ===================== */
 
 take(rope) :-
@@ -579,7 +683,8 @@ look :-
         NewCount = 1
     ),
     (NewCount >= 2 -> details(Place) ; true),
-    nl, !.
+    nl,
+    print_time, nl, !.
 
 /* ===================== Movement ===================== */
 
@@ -587,14 +692,119 @@ n  :- go(n).  s  :- go(s).  e  :- go(e).  w  :- go(w).
 ne :- go(ne). sw :- go(sw). nw :- go(nw). se :- go(se).
 u  :- go(u).  d  :- go(d).
 
+go(_) :- game_over, !, game_over_notice.
 go(Dir) :-
     i_am_at(Here),
     path(Here, Dir, There),
     retract(i_am_at(Here)),
     assert(i_am_at(There)),
-    look, !.
+    advance_time(5),
+    (game_over -> true ; look), !.
 go(_) :-
     write('You cannot go that way.'), nl.
+
+/* ===================== Endings ===================== */
+
+end_banner :-
+    nl, write('======================================================='), nl.
+
+ending_a :-
+    assert(game_over),
+    end_banner,
+    write('              ENDING A — OUT'), nl,
+    end_banner, nl,
+    write('The mirror-trail spits you out onto a logging road.'), nl,
+    write('Behind you, Kalmbach is already gone in the fog.'), nl,
+    write('You do not look back. You do not know what happens'), nl,
+    write('behind you, and part of you never wants to.'), nl, nl,
+    write('Your phone buzzes. One bar. A message:'), nl,
+    write('"We regret the Innsbruck feature has been cancelled."'), nl,
+    write('You never applied for any feature.'), nl, nl,
+    write('Who sent for you? What happens in Kalmbach without you?'), nl,
+    write('(start. to play again)'), nl, !.
+
+ending_b :-
+    assert(game_over),
+    end_banner,
+    write('              ENDING B — THE BELL'), nl,
+    end_banner, nl,
+    write('You hold the letter up to Erna. "You wrote this. Months ago."'), nl,
+    write('The bell still hangs in the air between you.'), nl,
+    write('For the first time she looks her age. The plan needed you'), nl,
+    write('to stay of your own will. You are leaving — and not alone.'), nl, nl,
+    write('Whatever the contract was, it goes unfulfilled.'), nl,
+    write('Hilde takes your arm. The shutters open, one by one.'), nl,
+    write('Benedikt stays behind, at peace.'), nl, nl,
+    write('At the village edge, Mia waves once. Then she is not there.'), nl,
+    write('Was she ever?'), nl,
+    write('(start. to play again)'), nl, !.
+
+ending_c :-
+    assert(game_over),
+    end_banner,
+    write('              ENDING C — THE PROCESSION'), nl,
+    end_banner, nl,
+    write('Midnight. The shutters open all at once.'), nl,
+    write('They come out with candles, every face you have met'), nl,
+    write('and many you have not. Erna at the front. Hilde will not'), nl,
+    write('meet your eyes.'), nl, nl,
+    write('You understand all of it now — the letter, the choosing,'), nl,
+    write('the contract. You understand it completely.'), nl,
+    write('Too late to matter.'), nl, nl,
+    write('Who comes to Kalmbach next full moon?'), nl,
+    write('(start. to play again)'), nl, !.
+
+game_over_notice :-
+    write('It is over. Type start. to begin again.'), nl.
+
+/* ----- Escape routes ----- */
+
+escape :- game_over, !, game_over_notice.
+escape :-
+    i_am_at(forest),
+    write('You take the hidden trail alone, the way the mirror showed you.'), nl,
+    ending_a, !.
+escape :-
+    write('There is no way out from here. The forest trail is the only road.'), nl, !.
+
+follow_jakob :- game_over, !, game_over_notice.
+follow_jakob :-
+    i_am_at(barn), trust(jakob, devoted),
+    write('You follow Jakob into the dark without a single question.'), nl,
+    write('The car is not where he said. Neither is the road.'), nl,
+    write('Lanterns close in from the trees.'), nl,
+    ending_c, !.
+follow_jakob :-
+    i_am_at(barn), (trust(jakob, trusted) ; holding(car_key)),
+    write('Jakob leads you to the village edge — then stops cold.'), nl,
+    write('The road is blocked. "I... I can''t. I''m sorry."'), nl,
+    write('He turns back. The car was never the way out.'), nl, !.
+follow_jakob :-
+    i_am_at(barn),
+    write('Jakob will not lead you anywhere. Not like this.'), nl, !.
+follow_jakob :-
+    write('Jakob is not here.'), nl.
+
+/* ----- The reckoning with Erna ----- */
+
+confront_erna :- game_over, !, game_over_notice.
+confront_erna :-
+    i_am_at(village_entrance), trust(erna, feared),
+    write('Erna is gone. You confront only the empty road.'), nl, !.
+confront_erna :-
+    i_am_at(village_entrance),
+    clue('The letter: The Innsbruck interview was fabricated. Someone lured you here. The handwriting is familiar.'),
+    clue('Otto\'s diary: Erna wrote the interview letter herself, three months ago. She planned Leon\'s arrival without telling the village.'),
+    bell_rung,
+    trust(hilde, devoted),
+    ending_b, !.
+confront_erna :-
+    i_am_at(village_entrance),
+    write('You face Erna with what you have — but it is not enough,'), nl,
+    write('not yet. You need the letter and the proof she wrote it,'), nl,
+    write('the bell rung to buy time, and Hilde ready to leave with you.'), nl, !.
+confront_erna :-
+    write('Erna is not here.'), nl.
 
 /* ===================== Engine ===================== */
 
@@ -612,13 +822,38 @@ instructions :-
     write('  read_item(X).   -> read a document'), nl,
     write('  inventory.      -> show carried items'), nl,
     write('  notes.          -> show discovered clues'), nl,
+    write('  time.           -> check the clock (midnight is the deadline)'), nl,
+    write('  ring_bell.      -> ring the church bell (needs rope)'), nl,
+    write('  reassure(X).    -> deepen trust with a character'), nl,
+    write('  confide(X).     -> share what you have learned'), nl,
+    write('  confront_jakob. -> confront Jakob with evidence'), nl,
+    write('  confront_erna.  -> face Erna at the village entrance'), nl,
+    write('  follow_jakob.   -> let Jakob lead you out'), nl,
+    write('  escape.         -> take the forest trail out (in the forest)'), nl,
     write('  help.           -> show this list'), nl,
     write('  quit.           -> quit the game'), nl,
     write('-------------------------------------------------------'), nl, nl.
 
 /* ===================== Start ===================== */
 
+reset_state :-
+    retractall(i_am_at(_)), retractall(at(_, _)), retractall(holding(_)),
+    retractall(trust(_, _)), retractall(looked_at(_, _)), retractall(clue(_)),
+    retractall(game_time(_)), retractall(deadline(_)),
+    retractall(bell_rung), retractall(game_over),
+    assert(i_am_at(crash_site)),
+    assert(trust(erna, neutral)), assert(trust(hilde, neutral)),
+    assert(trust(jakob, neutral)), assert(trust(benedikt, neutral)),
+    assert(trust(otto, neutral)),
+    assert(game_time(0)), assert(deadline(120)),
+    assert(at(flashlight, crash_site)), assert(at(rope, crash_site)),
+    assert(at(well_note, village_square)), assert(at(mirror, inn)),
+    assert(at(hildes_diary, inn_cellar)), assert(at(church_record, church_interior)),
+    assert(at(crypt_code, graveyard)), assert(at(letter, crypt)),
+    assert(at(car_key, barn)), assert(at(ottos_diary, mayors_house)).
+
 start :-
+    reset_state,
     nl,
     write('======================================================='), nl,
     write('              WHISPERS BETWEEN US'), nl,
