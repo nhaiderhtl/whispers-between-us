@@ -1,50 +1,51 @@
 # Whispers Between Us
 
-> *Ein Text-Adventure in Prolog. Horror. Vollmond.*
+> *A text adventure in Prolog. Horror. Full moon.*
 
 ---
 
-## Hintergrundgeschichte
+## Background
 
-Das Dorf Kalmbach liegt irgendwo in den Alpen — auf keiner modernen Karte eingetragen, von keinem Navi gefunden. Die nächste Stadt ist 40 Kilometer Schotterstraße entfernt. Die Bewohner wollen das so.
+The village of Kalmbach lies somewhere in the Alps — not on any modern map, not found by any navigation system. The nearest town is 40 kilometers of gravel road away. The residents want it that way.
 
-Einmal im Monat, bei Vollmond, schließen sie die Fensterläden.
-
----
-
-Du heißt **Leon Varga**. Journalist. Freiberuflich, mittellos, auf dem Weg zu einem Interview in Innsbruck das du dringend brauchst. Du fährst nachts, weil du spät dran bist. Die Abkürzung durchs Gebirge sah auf der Karte vernünftig aus.
-
-Dann der Regen. Dann der Nebel. Dann der Graben.
-
-Dein Auto liegt zwei Meter tief im Straßengraben, die Vorderachse geknickt. Dein Handy zeigt null Balken. Es ist kurz nach 22 Uhr. Draußen ist es kalt und der Wald macht Geräusche die Wälder eigentlich nicht machen.
-
-Etwa einen Kilometer die Straße runter siehst du Lichter.
+Once a month, on the full moon, they close their shutters.
 
 ---
 
-Du kennst Kalmbach nicht. Du weißt nicht, dass heute Nacht Vollmond ist. Du weißt nicht, warum ein alter Mann am Ortseingang steht und dich ansieht, als wärst du bereits tot. Du weißt nicht, was *"die Prozession"* ist, von der die Wirtin murmelnd spricht, als sie denkt du schläfst.
+You are **Leon Varga**. Freelance journalist, barely making ends meet, on your way to an interview in Innsbruck you desperately need. You are driving at night because you are running late. The shortcut through the mountains looked reasonable on the map.
 
-Was du weißt: Du musst hier weg. Dein Auto ist kaputt. Es gibt keine Verbindung nach außen. Und irgendjemand im Dorf weiß, wie du rauskommst.
+Then the rain. Then the fog. Then the ditch.
 
-Du musst nur herausfinden wem du vertrauen kannst — bevor Mitternacht kommt.
+Your car is two meters deep in a roadside ditch, the front axle snapped. Your phone shows no signal. It is just past 10 PM. Outside it is cold and the forest makes sounds that forests are not supposed to make.
+
+About a kilometer down the road, you see lights.
 
 ---
 
-## Spielstart
+You do not know Kalmbach. You do not know that tonight is a full moon. You do not know why an old woman stands at the village entrance and looks at you as if you were already dead. You do not know what *"the procession"* is, which the innkeeper murmurs about when she thinks you are asleep.
+
+What you know: you need to get out. Your car is broken. There is no connection to the outside world. And someone in the village knows how to leave.
+
+You just have to figure out who you can trust — before midnight comes.
+
+---
+
+## Start
 
 ```prolog
 ?- start.
 ```
 
-## Befehle
+## Commands
 
-| Befehl | Aktion |
+| Command | Action |
 |---|---|
-| `n.` `s.` `e.` `w.` | Bewegung |
-| `look.` | Umgebung beschreiben |
-| `talk.` | Mit Charakter sprechen |
-| `take(X).` | Item aufheben |
-| `drop(X).` | Item ablegen |
-| `inventory.` | Inventar anzeigen |
-| `help.` | Befehle anzeigen |
-| `quit.` | Spiel beenden |
+| `n.` `s.` `e.` `w.` | Move in a direction |
+| `look.` | Examine surroundings |
+| `talk.` | Speak to someone nearby |
+| `take(X).` | Pick up an item |
+| `drop(X).` | Put down an item |
+| `inventory.` | Show carried items |
+| `notes.` | Show discovered clues |
+| `help.` | Show all commands |
+| `quit.` | Quit the game |

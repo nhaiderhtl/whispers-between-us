@@ -1,339 +1,334 @@
 # GAME_DESIGN — Whispers Between Us
 
-> Entwickler-Referenz. Bei jeder Spieländerung synchron halten.
+> Developer reference. Keep in sync with game.pl at all times.
 
 ---
 
-## Design-Prinzipien
+## Design Principles
 
-- **Partielles Unwissen:** Spieler bekommt nie das vollständige Bild auf einmal. Infos kommen fragmentiert — durch Items, Dialoge, Raumdetails.
-- **Offenes Ende:** Kein Ending löst alles auf. Immer bleibt eine Frage offen. Das soll Neugierde auf zweiten Durchlauf wecken.
-- **Mehrere Wahrheiten:** Charaktere lügen nicht immer absichtlich — manche glauben selbst an ihre Version. Spieler muss selbst urteilen.
-- **Reversibles Vertrauen:** Neue Beweise können Einschätzungen komplett kippen. Frühe Entscheidungen sind nicht permanent.
-- **Belohntes Erkunden:** Wer alle Räume besucht und alle Charaktere befragt, versteht mehr — wird aber nie alles verstehen.
-
----
-
-## Story-Kern
-
-**Spieler:** Leon Varga, Journalist, freiberuflich  
-**Situation:** Autounfall bei Nacht auf Schotterstraße, isoliertes Alpendorf Kalmbach  
-**Scheinbares Ziel:** Aus dem Dorf raus, zurück zur Zivilisation  
-**Echtes Ziel:** Erst im Spielverlauf klar — jemand hat dafür gesorgt, dass du hier bist  
-**Zeitdruck:** Mitternacht — die Prozession beginnt  
-
-**Was der Spieler am Anfang weiß:**
-- Unfall, kein Empfang, Lichter im Dorf
-- Ein alter Mann am Ortseingang starrt ihn an
-- Es ist Vollmond
-
-**Was der Spieler nie vollständig erfährt:**
-- Warum genau er ausgewählt wurde
-- Was Mia wirklich ist
-- Ob Ernas Plan jemals aufgegangen wäre
+- **Partial ignorance:** The player never gets the full picture at once. Information comes fragmented — through items, dialogue, room details.
+- **Open ending:** No ending resolves everything. A question always remains. This is intentional — it drives curiosity for a second playthrough.
+- **Multiple truths:** Characters do not always lie deliberately — some believe their own version. The player must judge.
+- **Reversible trust:** New evidence can completely overturn earlier assessments. Early decisions are not permanent.
+- **Rewarded exploration:** Players who visit all rooms and question all characters understand more — but will never understand everything.
 
 ---
 
-## Karte
+## Story Core
+
+**Player:** Leon Varga, freelance journalist
+**Situation:** Car crash at night on a gravel road, isolated Alpine village of Kalmbach
+**Apparent goal:** Get out of the village, return to civilization
+**Real goal:** Only becomes clear during play — someone made sure Leon ended up here
+**Time pressure:** Midnight — the procession begins
+
+**What the player knows at the start:**
+- Crash, no signal, lights in the village
+- An old woman at the village entrance stares at him
+- It is a full moon
+
+**What the player never fully learns:**
+- Exactly why he was chosen
+- What Mia really is
+- Whether Erna's plan would ever have worked
+
+---
+
+## Map
 
 ```
-[Unfallort]
-     |
-  (Waldweg)
-     |
-[Dorfeingang]
-     |
-[Dorfplatz] ──── [Wirtshaus] ──── [Wirtshauskeller]
-     |
-     ├──── [Kirche/Friedhof] ──── [Kircheninneres] ──── [Krypta]
-     |
-     ├──── [Bürgermeisterhaus]
-     |
-     └──── [Scheune]
+[Crash Site]
+      |
+ (Forest Path)
+      |
+[Village Entrance]
+      |
+[Village Square] ──── [Inn] ──── [Inn Cellar]
+      |
+      ├──── [Church / Graveyard] ──── [Church Interior] ──── [Crypt]
+      |
+      ├──── [Mayor's House]
+      |
+      └──── [Barn]
 
-[Wald] (freischaltbar vom Dorfplatz, nur nachts mit Spiegel)
+[Forest] (unlockable from Village Square, only at night with mirror)
 ```
 
 ---
 
-## Räume
+## Rooms
 
-### Unfallort
-- **Beschreibung:** Straßengraben, Vorderachse geknickt, Regen, Nebel. Lichter in der Ferne sichtbar.
-- **Items:** Taschenlampe (im Handschuhfach), Seil (im Kofferraum — erst nach Rätsel erreichbar)
-- **Verbindungen:** N → Waldweg
-- **Details:** Reifenspuren auf der Straße — zwei Sets. Ein Fahrzeug hat dich gedrängt. Spieler bemerkt das vielleicht nicht sofort.
+### Crash Site
+- **Description:** Roadside ditch, front axle snapped, rain, fog. Lights visible in the distance.
+- **Items:** flashlight (in glove compartment), rope (in trunk — accessible after puzzle)
+- **Connections:** N → Forest Path
+- **Details:** Tire tracks on the road — two sets. A vehicle pushed you. Player may not notice immediately.
 
-### Waldweg
-- **Beschreibung:** Schmaler Pfad, Bäume schließen sich über dir. Geräusche im Unterholz.
+### Forest Path
+- **Description:** Narrow trail, trees close in overhead. Sounds in the undergrowth.
 - **Items:** —
-- **Verbindungen:** S → Unfallort, N → Dorfeingang
-- **Details:** Frische Fußspuren im Schlamm Richtung Dorf — mehrere Personen, kürzlich
+- **Connections:** S → Crash Site, N → Village Entrance
+- **Details:** Fresh footprints in the mud heading toward the village — several people, very recent.
 
-### Dorfeingang
-- **Beschreibung:** Verwittertes Ortsschild: *"Kalmbach — Gegründet 1648."* Erna steht reglos daneben.
-- **Charakter:** Erna
+### Village Entrance
+- **Description:** Weathered sign: *"Kalmbach — Est. 1648."* Erna stands motionless beside it.
+- **Character:** Erna
 - **Items:** —
-- **Verbindungen:** S → Waldweg, N → Dorfplatz
+- **Connections:** S → Forest Path, N → Village Square
 
-### Dorfplatz
-- **Beschreibung:** Kleiner Platz, Brunnen in der Mitte. Fensterläden überall geschlossen. Kein Mensch zu sehen außer von weitem Schatten.
-- **Items:** Notiz am Brunnen (anonym: *"Glaube niemandem der dir zu schnell hilft."*)
-- **Verbindungen:** W → Wirtshaus, N → Kirche/Friedhof, O → Bürgermeisterhaus, S → Dorfeingang, SW → Scheune
+### Village Square
+- **Description:** Small square, well in the center. Shutters closed everywhere. No one visible except distant shadows.
+- **Items:** Note at the well (anonymous: *"Trust no one who helps you too quickly."*)
+- **Connections:** W → Inn, N → Church/Graveyard, E → Mayor's House, S → Village Entrance, SW → Barn
 
-### Wirtshaus
-- **Beschreibung:** Warm, riecht nach Holzrauch. Hilde wischt die Theke. Zu freundlich für diese Uhrzeit.
-- **Charakter:** Hilde
-- **Items:** Spiegel (an Wand, nimmt Zeit und Hildes Vertrauen), Schlüssel zu Wirtshauskeller (hinter Theke)
-- **Verbindungen:** O → Dorfplatz, Treppe → Wirtshauskeller
+### Inn
+- **Description:** Warm, smells of woodsmoke. Hilde wipes the counter. Too friendly for this hour.
+- **Character:** Hilde
+- **Items:** mirror (on wall, costs time and Hilde's trust), key to inn cellar (behind counter)
+- **Connections:** E → Village Square, stairs → Inn Cellar
 
-### Wirtshauskeller
-- **Beschreibung:** Schimmel, alte Weinfässer. Und eine frische Matratze. Jemand hat hier kürzlich geschlafen — oder versteckt.
-- **Items:** Hildes Tagebuch (versteckt hinter Fass — nur bei `trust(hilde, trusted)` auffindbar)
-- **Verbindungen:** Treppe → Wirtshaus
-- **Details:** Tagebuch enthüllt: Hilde weiß von Jakob. Sie hat geschwiegen aus Angst, nicht aus Loyalität.
+### Inn Cellar
+- **Description:** Mold, old wine barrels. And a fresh mattress. Someone slept here recently — or was hidden.
+- **Items:** Hilde's diary (hidden behind barrel — only findable at `trust(hilde, trusted)`)
+- **Connections:** stairs → Inn
+- **Details:** Diary reveals: Hilde knew about Jakob. She stayed silent out of fear, not loyalty.
 
-### Kirche/Friedhof
-- **Beschreibung:** Alte Kirche, Friedhof davor. Mia sitzt auf einem Grabstein.
-- **Charakter:** Mia
-- **Items:** Grabstein-Inschrift (lesbar mit Taschenlampe — gibt Krypta-Code)
-- **Verbindungen:** S → Dorfplatz, Tür → Kircheninneres
+### Church / Graveyard
+- **Description:** Old church, graveyard in front. Mia sits on a gravestone.
+- **Character:** Mia
+- **Items:** Gravestone inscription (readable with flashlight — gives crypt code)
+- **Connections:** S → Village Square, door → Church Interior
 
-### Kircheninneres
-- **Beschreibung:** Kerzen brennen, obwohl niemand da ist. Pfarrer Benedikt kniet vor dem Altar.
-- **Charakter:** Pfarrer Benedikt
-- **Items:** Altes Kirchenbuch (gibt Hintergrund zur Prozession, unvollständig)
-- **Verbindungen:** Tür → Kirche/Friedhof, Stufen → Krypta (nur mit Krypta-Code)
+### Church Interior
+- **Description:** Candles burning though no one lit them. Father Benedikt kneels before the altar.
+- **Character:** Father Benedikt
+- **Items:** Old church record (gives background on the procession, incomplete)
+- **Connections:** door → Church/Graveyard, steps → Crypt (only with crypt code)
 
-### Krypta
-- **Beschreibung:** Unter der Kirche. Kalt. Steinplatten mit Namen. Eine Platte ist frisch verschoben.
-- **Items:** Brief (adressiert an "L.V." — Leons Initialen. Geschrieben vor 3 Monaten.)
-- **Verbindungen:** Stufen → Kircheninneres
-- **Details:** Brief enthüllt: Das Interview war gefälscht. Jemand wollte Leon hier haben. Absender unbekannt — aber Handschrift taucht später wieder auf.
+### Crypt
+- **Description:** Below the church. Cold. Stone slabs with names. One slab has been moved recently.
+- **Items:** Letter (addressed to "L.V." — Leon's initials. Written three months ago.)
+- **Connections:** steps → Church Interior
+- **Details:** Letter reveals: the interview was fake. Someone wanted Leon here. Sender unknown — but the handwriting appears again later.
 
-### Bürgermeisterhaus
-- **Beschreibung:** Massiv, abgesperrt. Licht im Obergeschoss.
-- **Charakter:** Bürgermeister Otto (nur erreichbar wenn `trust(benedikt, trusted)` oder mit Schlüssel)
-- **Items:** Tagebuch des Bürgermeisters (Krypta-Schlüssel nötig um reinzukommen)
-- **Verbindungen:** W → Dorfplatz
+### Mayor's House
+- **Description:** Solid, locked. Light in the upper floor.
+- **Character:** Mayor Otto (only reachable if `trust(benedikt, trusted)` or with key)
+- **Items:** Mayor's diary (requires crypt key to enter)
+- **Connections:** W → Village Square
 
-### Scheune
-- **Beschreibung:** Türspalt offen. Jakob steht drin, wartet. Wirkt nervös.
-- **Charakter:** Jakob
-- **Items:** Zündschlüssel (Jakobs Auto — funktionierendes Fahrzeug, aber Straße ist blockiert)
-- **Verbindungen:** NO → Dorfplatz
+### Barn
+- **Description:** Door ajar. Jakob stands inside, waiting. Looks nervous.
+- **Character:** Jakob
+- **Items:** car key (Jakob's car — working vehicle, but road is blocked)
+- **Connections:** NE → Village Square
 
-### Wald
-- **Beschreibung:** Dicht. Kein Mondlicht außer an einer Stelle — dort spiegelt sich etwas.
+### Forest
+- **Description:** Dense. No moonlight except at one spot — something reflects there.
 - **Items:** —
-- **Verbindungen:** Dorfplatz (Eingang nur nachts mit Spiegel sichtbar), Waldpfad → Fluchtroute
-- **Freischaltung:** `at(spiegel, in_hand)` + nach Mitternacht gesperrter Pfad
+- **Connections:** Village Square (entrance only visible at night with mirror), forest trail → escape route
+- **Unlock:** `holding(mirror)` + path locked after midnight
 
 ---
 
-## Charaktere
+## Characters
 
 ### Erna
-- **Ort:** Dorfeingang
-- **Scheinbar:** Alte Frau, warnt den Spieler
-- **Wahrheit:** Anführerin. Die Warnung war keine Warnung — sie war eine Einladung formuliert als Warnung, um sicherzustellen dass Leon ins Dorf kommt.
-- **Trust-Effekte:**
-  - `neutral` → cryptische Sätze, nichts Konkretes
-  - `trusted` → gibt falschen Tipp: soll zum Pfarrer gehen
-  - `doubted` → schweigt, aber Mimik verrät Unruhe
-  - `feared` → versteckt sich, nicht mehr ansprechbar
-- **Twist-Enthüllung:** Handschrift im Brief aus der Krypta ist Ernas.
+- **Location:** Village Entrance
+- **Appears to be:** Old woman, warns the player
+- **Truth:** The ringleader. The warning was not a warning — it was an invitation phrased as a warning, to make sure Leon entered the village.
+- **Trust effects:**
+  - `neutral` → cryptic remarks, nothing concrete
+  - `trusted` → gives false tip: go to the priest
+  - `doubted` → silent, but her expression betrays unease
+  - `feared` → hides, no longer approachable
+- **Twist reveal:** Handwriting in the letter from the crypt is Erna's.
 
 ### Hilde
-- **Ort:** Wirtshaus
-- **Scheinbar:** Freundliche Wirtin, hilfsbereit
-- **Wahrheit:** Selbst Gefangene des Systems. Weiß von Jakobs Plan. Hat geschwiegen aus Angst.
-- **Trust-Effekte:**
-  - `neutral` → Smalltalk, kein Inhalt
-  - `trusted` → gesteht Angst, gibt Hinweis auf Keller
-  - `devoted` → gibt Spiegel ohne Bedingung, warnt vor Erna
-  - `doubted` → verweigert Spiegel, Keller bleibt zu
-- **Reversibilität:** Wenn Spieler Hildes Tagebuch findet ohne ihr zu vertrauen → Trust springt sofort auf `trusted`
+- **Location:** Inn
+- **Appears to be:** Friendly innkeeper, helpful
+- **Truth:** Herself a prisoner of the system. Knows about Jakob's plan. Stayed silent out of fear.
+- **Trust effects:**
+  - `neutral` → small talk, no substance
+  - `trusted` → confesses fear, hints at the cellar
+  - `devoted` → gives mirror without condition, warns about Erna
+  - `doubted` → refuses mirror, cellar stays locked
+- **Reversibility:** If player finds Hilde's diary without trusting her → trust jumps immediately to `trusted`
 
 ### Jakob
-- **Ort:** Scheune
-- **Scheinbar:** Einziger Verbündeter, will Leon rausbringen
-- **Wahrheit:** Hat Leons Auto von der Straße gedrängt. Arbeitet für Erna. Bereut es — aber handelt nicht dagegen.
-- **Trust-Effekte:**
-  - `neutral` → bietet Hilfe an, sagt Auto steht bereit
-  - `trusted` → gibt Zündschlüssel, führt zum Waldrand (Falle)
-  - `devoted` → Leon folgt Jakob blind → schlechtestes Ending möglich
-  - `doubted` → Jakob wird defensiv, gibt trotzdem Key wenn Spieler ihn unter Druck setzt
-  - `feared` → Jakob flieht, Zündschlüssel bleibt in Scheune
-- **Reversibilität:** Reifenspuren am Unfallort + Hildes Tagebuch zusammen → Trust fällt auf `feared`, Schlüssel trotzdem findbar
+- **Location:** Barn
+- **Appears to be:** The only ally, wants to get Leon out
+- **Truth:** He ran Leon's car off the road. Works for Erna. Regrets it — but does not act against it.
+- **Trust effects:**
+  - `neutral` → offers help, says a car is ready
+  - `trusted` → gives car key, leads to the forest edge (trap)
+  - `devoted` → Leon follows Jakob blindly → worst ending possible
+  - `doubted` → Jakob gets defensive, still gives key under pressure
+  - `feared` → Jakob flees, car key stays in barn
+- **Reversibility:** Tire tracks at crash site + Hilde's diary together → trust drops to `feared`, key still findable
 
-### Pfarrer Benedikt
-- **Ort:** Kircheninneres
-- **Scheinbar:** Sinister, weicht aus
-- **Wahrheit:** Will den Fluch brechen, aber glaubt der einzige Weg ist durch die Prozession. Kein Bösewicht — tragische Figur.
-- **Trust-Effekte:**
-  - `neutral` → betet, ignoriert Leon fast
-  - `trusted` → erklärt Prozession (seine Version), öffnet Krypta-Zugang
-  - `devoted` → gibt Schlüssel zu Bürgermeisterhaus
-  - `doubted` → Krypta bleibt zu ohne Code
-- **Wichtig:** Benedikts Version der Wahrheit ist unvollständig aber ehrlich gemeint
+### Father Benedikt
+- **Location:** Church Interior
+- **Appears to be:** Sinister, evasive
+- **Truth:** Wants to break the curse, but believes the only way is through the procession. Not a villain — a tragic figure.
+- **Trust effects:**
+  - `neutral` → praying, almost ignores Leon
+  - `trusted` → explains the procession (his version), opens crypt access
+  - `devoted` → gives key to Mayor's House
+  - `doubted` → crypt stays locked without code
+- **Note:** Benedikt's version of the truth is incomplete but sincerely meant.
 
 ### Mia
-- **Ort:** Kirchhof/Friedhof
-- **Scheinbar:** Kind, versteckt sich, weiß seltsame Dinge
-- **Wahrheit:** Seit 10 Jahren tot. Spieler erfährt das nie direkt — nur Andeutungen. Grabstein mit ihrem Namen ist lesbar.
-- **Trust-Effekte:** kein Trust-System — Mia verhält sich immer gleich, gibt immer korrekte Infos
-- **Besonderheit:** Einzige Figur die nie lügt. Aber Spieler hat keinen Grund ihr früh zu vertrauen.
-- **Twist-Enthüllung:** Grabstein-Code → Mias Geburts- und Sterbedatum sichtbar → Sterbedatum: vor 10 Jahren. Spieler rechnet nach.
+- **Location:** Church / Graveyard
+- **Appears to be:** A child, hiding, knows strange things
+- **Truth:** Dead for ten years. Player never learns this directly — only hints. Her gravestone is readable.
+- **Trust effects:** no trust system — Mia behaves the same always, always gives accurate information
+- **Special:** The only character who never lies. But the player has no reason to trust her early on.
+- **Twist reveal:** Gravestone code → Mia's birth and death date visible → death date: ten years ago. Player does the math.
 
-### Bürgermeister Otto
-- **Ort:** Bürgermeisterhaus
-- **Scheinbar:** Autoritäre Figur, Anführer
-- **Wahrheit:** Weiß selbst nicht alles. Führt aus was ihm Erna seit Jahren sagt. Schwach, nicht böse.
-- **Trust-Effekte:**
-  - `neutral` → sagt "geh schlafen"
-  - `trusted` → zeigt Tagebuch, bricht innerlich zusammen
-  - `doubted` → wirft Leon raus
+### Mayor Otto
+- **Location:** Mayor's House
+- **Appears to be:** Authoritative figure, leader
+- **Truth:** Does not know everything himself. Executes what Erna has told him for years. Weak, not evil.
+- **Trust effects:**
+  - `neutral` → says "go to sleep"
+  - `trusted` → shows diary, breaks down internally
+  - `doubted` → throws Leon out
 
 ---
 
-## Trust-System
+## Trust System
 
-### Stufen
+### Levels
 ```
 feared → doubted → neutral → trusted → devoted
   -2        -1        0        +1        +2
 ```
 
-### Änderungen
-- Steigt durch: richtige Dialogoptionen, passende Items vorzeigen, Räume in richtiger Reihenfolge
-- Sinkt durch: Lügen aufdecken (via Items/Tagebücher), falschen Charakteren vertrauen, bestimmte Aktionen
-- **Reversibel:** Beweisitems (Tagebücher, Briefe, Notizen) können Trust sprunghaft ändern unabhängig von bisherigen Entscheidungen
+### Changes
+- Rises through: correct dialogue options, showing matching items, visiting rooms in the right order
+- Falls through: exposing lies (via items/diaries), trusting the wrong characters, certain actions
+- **Reversible:** Evidence items (diaries, letters, notes) can shift trust sharply regardless of prior decisions
 
-### Dialogoptionen
-Entscheidungen im Dialog ändern Trust. Beispiele:
-- `glauben.` / `zweifeln.` / `schweigen.`
-- `konfrontieren(jakob).` — nur möglich wenn Reifenspuren UND Tagebuch gefunden
-- `beruhigen(hilde).` — erhöht Trust wenn Spieler vorher Keller nicht betreten hat
+### Dialogue Options
+Decisions in dialogue change trust. Examples:
+- `trust_her.` / `doubt_her.` / `stay_silent.`
+- `confront(jakob).` — only available if tire tracks AND diary found
+- `reassure(hilde).` — raises trust if player has not entered cellar yet
 
 ---
 
 ## Items
 
-| ID | Name | Ort | Verwendung |
+| ID | Name | Location | Use |
 |---|---|---|---|
-| `taschenlampe` | Taschenlampe | Unfallort (Handschuhfach) | Grabstein lesen, dunkle Räume |
-| `seil` | Seil | Unfallort (Kofferraum) | Kirchturm-Glocke reparieren |
-| `spiegel` | Spiegel | Wirtshaus (Wand) | Waldpfad nachts sichtbar machen |
-| `kryptagruppe` | Krypta-Code | Grabstein (mit Taschenlampe) | Krypta öffnen |
-| `hildebuch` | Hildes Tagebuch | Wirtshauskeller | Jakob entlarven → Trust(jakob) sinkt |
-| `brief` | Brief an L.V. | Krypta | Enthüllt: Interview war Falle |
-| `ottobuch` | Ottos Tagebuch | Bürgermeisterhaus | Ernas Rolle bestätigen |
-| `kirchenbuch` | Altes Kirchenbuch | Kircheninneres | Prozession-Hintergrund (unvollständig) |
-| `zuendschluessel` | Zündschlüssel | Scheune | Jakobs Auto starten |
-| `brunnennotiz` | Notiz am Brunnen | Dorfplatz | Erste Warnung (anonym) |
+| `flashlight` | Flashlight | Crash Site (glove compartment) | Read gravestone, lit dark rooms |
+| `rope` | Rope | Crash Site (trunk) | Repair church bell |
+| `mirror` | Mirror | Inn (wall) | Make forest path visible at night |
+| `crypt_code` | Crypt Code | Gravestone (with flashlight) | Open crypt |
+| `hildes_diary` | Hilde's Diary | Inn Cellar | Expose Jakob → trust(jakob) drops |
+| `letter` | Letter to L.V. | Crypt | Reveals: interview was a trap |
+| `ottos_diary` | Otto's Diary | Mayor's House | Confirm Erna's role |
+| `church_record` | Old Church Record | Church Interior | Procession background (incomplete) |
+| `car_key` | Car Key | Barn | Start Jakob's car |
+| `well_note` | Note at the Well | Village Square | First warning (anonymous) |
 
 ---
 
-## Rätsel
+## Puzzles
 
-| ID | Beschreibung | Benötigt | Freischaltet |
+| ID | Description | Requires | Unlocks |
 |---|---|---|---|
-| `seil_kofferraum` | Kofferraum klemmt — Seil holen | Taschenlampe (Schloss sehen) | Seil im Inventar |
-| `glocke` | Kirchturmglocke läutet nicht | Seil | Prozession verzögert sich — mehr Zeit |
-| `krypta_code` | Krypta-Tür verschlossen | Grabstein-Code (Taschenlampe) | Krypta betreten |
-| `waldpfad` | Waldeingang nachts unsichtbar | Spiegel | Fluchtroute durch Wald |
-| `konfrontation` | Jakob konfrontieren | Reifenspuren bemerkt + Hildes Tagebuch | Neue Dialogoptionen, Trust kippt |
+| `rope_trunk` | Trunk is stuck — get the rope | flashlight (see the latch) | rope in inventory |
+| `church_bell` | Church bell does not ring | rope | Procession delayed — more time |
+| `crypt_lock` | Crypt door is locked | gravestone code (flashlight) | Enter crypt |
+| `forest_trail` | Forest entrance invisible at night | mirror | Escape route through forest |
+| `confrontation` | Confront Jakob | Tire tracks noticed + Hilde's diary | New dialogue options, trust flips |
 
 ---
 
-## Entscheidungen & Konsequenzen
+## Decisions & Consequences
 
-| Aktion | Voraussetzung | Konsequenz |
+| Action | Requirement | Consequence |
 |---|---|---|
-| `glauben(jakob).` | storage_room | Trust(jakob)+1 |
-| `zweifeln(jakob).` | storage_room | Trust(jakob)-1 |
-| `konfrontieren(jakob).` | Reifenspuren + hildebuch | Trust(jakob) → feared, Schlüssel bleibt in Scheune |
-| `nehmen(spiegel).` | Wirtshaus | Trust(hilde)-1 wenn ohne Erlaubnis |
-| `fragen(hilde, keller).` | Trust(hilde, trusted) | Keller-Tür öffnet |
-| `glocke_lauten.` | Seil in hand + Kircheninneres | +10 Minuten Spielzeit |
-| `lesen(grabstein).` | Taschenlampe + Friedhof | Krypta-Code + Mias Sterbedatum sichtbar |
+| `trust_her.` | village_entrance | trust(erna)+1 |
+| `doubt_her.` | village_entrance | trust(erna)-1 |
+| `confront(jakob).` | tire tracks + hildes_diary | trust(jakob) → feared, key stays in barn |
+| `take(mirror).` | Inn | trust(hilde)-1 if taken without permission |
+| `ask(hilde, cellar).` | trust(hilde, trusted) | cellar door opens |
+| `ring_bell.` | rope in hand + church interior | +10 minutes game time |
+| `read(gravestone).` | flashlight + graveyard | crypt code + Mia's death date visible |
 
 ---
 
-## Erkenntnisse-System
+## Clue System
 
-- `look.` beim ersten Mal → nur Raumbeschreibung
-- `look.` beim zweiten Mal → Beschreibung + verstecktes Detail
-- Detail wird automatisch in `clue/1` gespeichert (kein Duplikat)
-- `notes.` → zeigt alle gesammelten Erkenntnisse als Liste
-- Details sind bewusst zweideutig — klar genug um aufzufallen, nicht klar genug um sofort zu verstehen
+- `look.` first time → room description only
+- `look.` second time → description + hidden detail
+- Detail automatically saved to `clue/1` (no duplicates)
+- `notes.` → lists all collected clues
+- Details are deliberately ambiguous — clear enough to notice, not clear enough to understand immediately
 
-### Detail-Texte pro Raum
+### Detail Text per Room
 
-| Raum | Detail (ab 2. look) |
+| Room | Detail (from 2nd look) |
 |---|---|
-| `dark_hallway` | Frische Schmutzspuren Richtung Norden |
-| `storage_room` | Zerknülltes Papier hinter Kiste |
-| *(weitere Räume folgen)* | |
+| `crash_site` | Two sets of tire tracks — someone pushed you |
+| `forest_path` | Fresh footprints heading toward the village, very recent |
+| `village_entrance` | Erna used your name — you never introduced yourself |
+| *(further rooms to follow)* | |
 
 ---
 
-## Zeitdruck
+## Time Pressure
 
-Mitternacht als Grenze. Mechanik: Aktionen verbrauchen Zeit (implizit). Glocke läuten gibt mehr Zeit. Nach Mitternacht: Waldpfad gesperrt, bestimmte Charaktere nicht mehr ansprechbar.
+Midnight is the limit. Mechanic: actions consume time (implicit). Ringing the bell buys more time. After midnight: forest path locked, certain characters no longer approachable.
 
 ---
 
 ## Endings
 
-### Ende A — Flucht (alleine)
-**Bedingung:** Spiegel + Waldpfad + ohne Jakob  
-**Ton:** Du bist draußen. Du weißt nicht was hinter dir passiert. Dein Handy hat wieder Empfang. Erste Nachricht: das Interview in Innsbruck wurde "leider abgesagt."  
-**Offen:** Wer hat das Interview geschickt? Was passiert in Kalmbach ohne dich?
+### Ending A — Escape (alone)
+**Condition:** mirror + forest trail + without Jakob
+**Tone:** You are outside. You do not know what happens behind you. Your phone has signal again. First message: the Innsbruck interview has been "regretfully cancelled."
+**Open:** Who sent the interview request? What happens in Kalmbach without you?
 
-### Ende B — Befreiung
-**Bedingung:** Glocke läuten + Erna konfrontieren (ottobook + brief) + Hilde mitnehmen  
-**Ton:** Der Fluch — was auch immer er war — bricht. Hilde kommt mit. Das Dorf ist still. Benedikt bleibt.  
-**Offen:** Mia taucht ein letztes Mal auf und winkt. War sie je real?
+### Ending B — Liberation
+**Condition:** Ring bell + confront Erna (ottos_diary + letter) + take Hilde with you
+**Tone:** The curse — whatever it was — breaks. Hilde comes with you. The village is silent. Benedikt stays.
+**Open:** Mia appears one last time and waves. Was she ever real?
 
-### Ende C — Geopfert
-**Bedingung:** Mitternacht erreicht oder Jakob blind vertraut (devoted)  
-**Ton:** Die Prozession beginnt. Du verstehst jetzt alles. Zu spät.  
-**Offen:** Wer kommt als nächstes nach Kalmbach?
-
----
-
-## Offene Fragen (bewusst nie aufgelöst)
-
-- Wer hat den Brief in der Krypta geschrieben? (Handschrift = Erna, aber warum 3 Monate vorher?)
-- Was ist Mia wirklich?
-- Was passiert beim nächsten Vollmond?
-- Gibt es andere Dörfer wie Kalmbach?
+### Ending C — Sacrificed
+**Condition:** Midnight reached, or trusted Jakob blindly (devoted)
+**Tone:** The procession begins. You understand everything now. Too late.
+**Open:** Who comes to Kalmbach next?
 
 ---
 
-## Technischer Stand
+## Open Questions (intentionally never resolved)
+
+- Who wrote the letter in the crypt? (Handwriting = Erna's, but why three months in advance?)
+- What is Mia, really?
+- What happens on the next full moon?
+- Are there other villages like Kalmbach?
+
+---
+
+## Technical Status
 
 | Feature | Status |
 |---|---|
-| Bewegung n/s/e/w | ✅ implementiert |
-| look / describe (Deutsch) | ✅ implementiert |
-| Details beim zweiten look | ✅ implementiert (`looked_at/2` zählt Besuche pro Raum) |
-| Erkenntnisse-System (`notes.`) | ✅ implementiert (`clue/1` dynamisch, kein Duplikat) |
-| Items anzeigen (`notice_items`) | ✅ implementiert |
-| nehmen / ablegen / inventar | ✅ implementiert |
-| Startort `unfallort` | ✅ implementiert |
-| Räume: unfallort, waldweg, dorfeingang | ✅ implementiert |
-| talk / interact — Erna | ✅ implementiert (neutral/trusted/doubted) |
-| Trust-System (5 Stufen) | ⬜ geplant |
-| Weitere Räume (Dorfplatz, Wirtshaus, …) | ⬜ geplant |
-| Zeitdruck / Mitternacht | ⬜ geplant |
-| Rätsel | ⬜ geplant |
-| Endings | ⬜ geplant |
-| Zeitdruck / Mitternacht | ⬜ geplant |
-| Items | ⬜ geplant |
-| Vollständige Karte | ⬜ geplant |
-| Vollständige Charaktere | ⬜ geplant |
-| Rätsel | ⬜ geplant |
-| Endings | ⬜ geplant |
+| Movement n/s/e/w | ✅ implemented |
+| look / describe (English) | ✅ implemented |
+| Details on second look | ✅ implemented (`looked_at/2` counts visits per room) |
+| Clue system (`notes.`) | ✅ implemented (`clue/1` dynamic, no duplicates) |
+| Item display (`notice_items`) | ✅ implemented |
+| take / drop / inventory | ✅ implemented |
+| Starting room `crash_site` | ✅ implemented |
+| Rooms: crash_site, forest_path, village_entrance | ✅ implemented |
+| talk / interact — Erna | ✅ implemented (neutral/trusted/doubted) |
+| Trust system (5 levels) | ⬜ planned |
+| Further rooms (Village Square, Inn, …) | ⬜ planned |
+| Time pressure / midnight | ⬜ planned |
+| Puzzles | ⬜ planned |
+| Endings | ⬜ planned |
