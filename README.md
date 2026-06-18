@@ -12,7 +12,7 @@ Einmal im Monat, bei Vollmond, schließen sie die Fensterläden.
 
 ---
 
-Du heißt **Leon Varga**. Journalist. Freiberuflich, mittellos, auf dem Weg zu einem Interview in Innsbruck das du dringend brauchst. Du fährst nachts, weil du spät dran bist. Die Abkürzung durchs Gebirge schien auf der Karte vernünftig aus.
+Du heißt **Leon Varga**. Journalist. Freiberuflich, mittellos, auf dem Weg zu einem Interview in Innsbruck das du dringend brauchst. Du fährst nachts, weil du spät dran bist. Die Abkürzung durchs Gebirge sah auf der Karte vernünftig aus.
 
 Dann der Regen. Dann der Nebel. Dann der Graben.
 
