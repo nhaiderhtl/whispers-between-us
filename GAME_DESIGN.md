@@ -317,15 +317,20 @@ Mitternacht als Grenze. Mechanik: Aktionen verbrauchen Zeit (implizit). Glocke l
 
 | Feature | Status |
 |---|---|
-| Bewegung n/s | ✅ implementiert |
-| look / describe | ✅ implementiert |
+| Bewegung n/s/e/w | ✅ implementiert |
+| look / describe (Deutsch) | ✅ implementiert |
 | Details beim zweiten look | ✅ implementiert (`looked_at/2` zählt Besuche pro Raum) |
 | Erkenntnisse-System (`notes.`) | ✅ implementiert (`clue/1` dynamisch, kein Duplikat) |
-| talk / interact | ✅ implementiert (marcus) |
-| Trust-System (2 Stufen) | ✅ implementiert (neutral/trusted/doubted) |
+| Items anzeigen (`notice_items`) | ✅ implementiert |
+| nehmen / ablegen / inventar | ✅ implementiert |
+| Startort `unfallort` | ✅ implementiert |
+| Räume: unfallort, waldweg, dorfeingang | ✅ implementiert |
+| talk / interact — Erna | ✅ implementiert (neutral/trusted/doubted) |
 | Trust-System (5 Stufen) | ⬜ geplant |
-| take / drop | ⬜ geplant |
-| inventory | ⬜ geplant |
+| Weitere Räume (Dorfplatz, Wirtshaus, …) | ⬜ geplant |
+| Zeitdruck / Mitternacht | ⬜ geplant |
+| Rätsel | ⬜ geplant |
+| Endings | ⬜ geplant |
 | Zeitdruck / Mitternacht | ⬜ geplant |
 | Items | ⬜ geplant |
 | Vollständige Karte | ⬜ geplant |

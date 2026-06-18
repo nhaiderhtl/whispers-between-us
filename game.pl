@@ -2,100 +2,168 @@
 :- retractall(at(_, _)), retractall(i_am_at(_)), retractall(holding(_)),
    retractall(trust(_, _)), retractall(looked_at(_, _)), retractall(clue(_)).
 
-/* Initial State */
-i_am_at(dark_hallway).
-trust(marcus, neutral).
+/* ===================== Anfangszustand ===================== */
 
-/* Locations and Paths */
-path(dark_hallway, n, storage_room).
-path(storage_room, s, dark_hallway).
+i_am_at(unfallort).
+trust(erna, neutral).
 
-/* Character Interaction */
+/* ===================== Karte ===================== */
+
+path(unfallort, n, waldweg).
+path(waldweg, s, unfallort).
+path(waldweg, n, dorfeingang).
+path(dorfeingang, s, waldweg).
+
+/* ===================== Items ===================== */
+
+at(taschenlampe, unfallort).
+
+/* ===================== Raumbeschreibungen ===================== */
+
+describe(unfallort) :-
+    write('Dein Auto liegt schraeg im Strassengraben, die Vorderachse'), nl,
+    write('geknickt. Ringsherum Wald. Der Regen hat aufgehoert, aber'), nl,
+    write('der Nebel haengt tief. Irgendwo im Dickicht knackt etwas.'), nl,
+    write('Ein schmaler Waldweg fuehrt nach Norden.'), nl.
+
+describe(waldweg) :-
+    write('Ein enger Pfad zwischen alten Fichten. Die Baeume schliessen'), nl,
+    write('sich fast ueber dir. Das Dorf muss nah sein — du kannst'), nl,
+    write('Licht durch die Aeste sehen, gedaempft und gelb.'), nl,
+    write('Der Weg fuehrt weiter nach Norden, zurueck nach Sueden.'), nl.
+
+describe(dorfeingang) :-
+    write('Ein verwittertes Holzschild: "Kalmbach — Gegruendet 1648."'), nl,
+    write('Die Strasse wird zu Kopfsteinpflaster. Fensterlaeden ueberall'), nl,
+    write('geschlossen. Kein Gerausch. Keine Bewegung.'), nl,
+    write('Und doch — am Rand des Lichtkegels steht eine alte Frau'), nl,
+    write('und sieht dich an, als haette sie auf dich gewartet.'), nl.
+
+/* ===================== Details (ab 2. look) ===================== */
+
+details(unfallort) :-
+    record_clue('Unfallort: Zwei Reifenspuren auf der Strasse — nicht nur deine. Jemand ist dicht an dir vorbeigefahren.'),
+    write('Du schaust die Strasse entlang. Zwei Reifenspuren im Schlamm.'), nl,
+    write('Eine davon — nicht deine. Jemand ist sehr dicht an dir'), nl,
+    write('vorbeigefahren. Kurz vor dem Graben.'), nl.
+
+details(waldweg) :-
+    record_clue('Waldweg: Frische Fussspuren im Schlamm Richtung Dorf — mehrere Personen, vor Kurzem.'),
+    write('Im Schlamm am Wegrand: Fussspuren. Mehrere. Alle Richtung Dorf.'), nl,
+    write('Frisch — die Kanten noch scharf. Vor wenigen Minuten.'), nl.
+
+details(dorfeingang) :-
+    record_clue('Dorfeingang: Die alte Frau hat dich beim Namen genannt — obwohl du dich nicht vorgestellt hast.'),
+    write('Du erinnerst dich: die Frau hat etwas gesagt als du naeherkamst.'), nl,
+    write('"Leon." Nur das. Kein Hallo, kein Woher-kommst-du.'), nl,
+    write('Du hast dich nicht vorgestellt.'), nl.
+
+details(_).
+
+/* ===================== Charaktere ===================== */
+
+character_at(erna, dorfeingang).
+
 talk :-
     i_am_at(Place),
     character_at(Name, Place),
     interact(Name), !.
 talk :-
-    write('There is no one here to talk to.'), nl.
+    write('Hier ist niemand, mit dem du reden koenntest.'), nl.
 
-character_at(marcus, storage_room).
+interact(erna) :-
+    trust(erna, neutral),
+    write('Die alte Frau sieht dich an. Ihre Augen bewegen sich nicht.'), nl,
+    write('"Du solltest nicht hier sein. Nicht heute Nacht."'), nl,
+    write('Sie macht eine Pause.'), nl,
+    write('"Aber du bist hier. Also geh ins Wirtshaus. Hilde laesst dich rein."'), nl,
+    write('Sie dreht sich um. Das Gespraech ist beendet.'), nl,
+    write('Vertraust du ihr? (vertrauen. / misstrauen.)'), nl, !.
 
-interact(marcus) :-
-    trust(marcus, neutral),
-    write('Marcus: "Did you hear that? I think something is in the walls."'), nl,
-    write('Do you trust him? (trust_him. / doubt_him.)'), nl, !.
+interact(erna) :-
+    trust(erna, trusted),
+    write('Erna steht reglos. Als du naherkommst, dreht sie den Kopf'), nl,
+    write('kaum merklich Richtung Kirche.'), nl,
+    write('"Der Pfarrer weiss mehr als er sagt. Frag ihn nach 1987."'), nl, !.
 
-interact(marcus) :-
-    trust(marcus, trusted),
-    write('Marcus looks at you. "We need to keep moving. Together."'), nl, !.
+interact(erna) :-
+    trust(erna, doubted),
+    write('Erna sieht dich an. Laechelt fast.'), nl,
+    write('"Du bist vorsichtig. Gut."'), nl,
+    write('Mehr sagt sie nicht.'), nl, !.
 
-interact(marcus) :-
-    trust(marcus, doubted),
-    write('Marcus stays away from you, watching the walls in silence.'), nl, !.
+/* ===================== Entscheidungen ===================== */
 
-/* Decisions */
-trust_him :-
-    i_am_at(storage_room),
-    trust(marcus, neutral),
-    retract(trust(marcus, _)),
-    assert(trust(marcus, trusted)),
-    write('You nod. Marcus looks relieved. "We stay together then."'), nl, !.
+vertrauen :-
+    i_am_at(dorfeingang),
+    trust(erna, neutral),
+    retract(trust(erna, _)),
+    assert(trust(erna, trusted)),
+    write('Du nickst. Irgendwas an ihr wirkt... aufrichtig. Oder zumindest'), nl,
+    write('so, als haette sie nichts zu gewinnen.'), nl, !.
 
-trust_him :-
-    i_am_at(storage_room),
-    write('You have already made your decision regarding Marcus.'), nl, !.
+vertrauen :-
+    i_am_at(dorfeingang),
+    write('Du hast deine Entscheidung bereits getroffen.'), nl, !.
 
-doubt_him :-
-    i_am_at(storage_room),
-    trust(marcus, neutral),
-    retract(trust(marcus, _)),
-    assert(trust(marcus, doubted)),
-    write('You look at him skeptically. Marcus narrows his eyes. "Fine. Watch your own back."'), nl, !.
+misstrauen :-
+    i_am_at(dorfeingang),
+    trust(erna, neutral),
+    retract(trust(erna, _)),
+    assert(trust(erna, doubted)),
+    write('Warum wusste sie deinen Namen? Warum stand sie genau hier?'), nl,
+    write('Du merkst dir ihre Worte — aber glaubst ihnen nicht.'), nl, !.
 
-doubt_him :-
-    i_am_at(storage_room),
-    write('You have already made your decision regarding Marcus.'), nl, !.
+misstrauen :-
+    i_am_at(dorfeingang),
+    write('Du hast deine Entscheidung bereits getroffen.'), nl, !.
 
-/* Descriptions */
-describe(dark_hallway) :-
-    write('You are in a cold, dark hallway. The air is thick with the smell of damp earth.'), nl,
-    write('A door to the north leads to a storage room.'), nl.
+/* ===================== Items nehmen/ablegen ===================== */
 
-describe(storage_room) :-
-    write('The storage room is cluttered with old crates. Marcus is standing in the corner, looking pale.'), nl.
+nehmen(X) :-
+    holding(X),
+    write('Du haeltst es bereits in der Hand.'), nl, !.
 
-/* Details — shown only on second look, saved as clues */
-details(dark_hallway) :-
-    record_clue('Flur: Der Boden ist nass. Frische Schmutzspuren fuehren Richtung Norden.'),
-    write('Der Boden ist nass. Frische Schmutzspuren fuehren Richtung Norden.'), nl.
+nehmen(X) :-
+    i_am_at(Place),
+    at(X, Place),
+    retract(at(X, Place)),
+    assert(holding(X)),
+    write('Genommen.'), nl, !.
 
-details(storage_room) :-
-    record_clue('Abstellraum: Hinter einer alten Kiste liegt ein zerknuelltes Stueck Papier.'),
-    write('Hinter einer alten Kiste liegt ein zerknuelltes Stueck Papier.'), nl.
+nehmen(_) :-
+    write('Das siehst du hier nicht.'), nl.
 
-details(_).
+ablegen(X) :-
+    holding(X),
+    i_am_at(Place),
+    retract(holding(X)),
+    assert(at(X, Place)),
+    write('Abgelegt.'), nl, !.
 
-/* Save clue only if not already known */
+ablegen(_) :-
+    write('Du traegst das nicht bei dir.'), nl.
+
+inventar :-
+    write('=== Inventar ==='), nl,
+    list_items.
+
+list_items :-
+    holding(X),
+    write('  - '), write(X), nl,
+    fail.
+list_items :-
+    \+ holding(_),
+    write('  Leer.'), nl, !.
+list_items.
+
+/* ===================== Erkenntnisse ===================== */
+
 record_clue(Text) :-
     clue(Text), !.
 record_clue(Text) :-
     assert(clue(Text)).
 
-/* Look — tracks visits per room, shows details on second look */
-look :-
-    i_am_at(Place),
-    describe(Place), nl,
-    (   looked_at(Place, Count)
-    ->  NewCount is Count + 1,
-        retract(looked_at(Place, Count)),
-        assert(looked_at(Place, NewCount))
-    ;   assert(looked_at(Place, 1)),
-        NewCount = 1
-    ),
-    (NewCount >= 2 -> details(Place) ; true),
-    nl.
-
-/* Notes — list all discovered clues */
 notes :-
     write('=== Erkenntnisse ==='), nl,
     list_clues.
@@ -109,12 +177,34 @@ list_clues :-
     write('  Noch keine Erkenntnisse.'), nl, !.
 list_clues.
 
-/* Basic Engine */
-help :- instructions.
-quit :- halt.
+/* ===================== Look ===================== */
+
+look :-
+    i_am_at(Place),
+    describe(Place), nl,
+    notice_items(Place),
+    (   looked_at(Place, Count)
+    ->  NewCount is Count + 1,
+        retract(looked_at(Place, Count)),
+        assert(looked_at(Place, NewCount))
+    ;   assert(looked_at(Place, 1)),
+        NewCount = 1
+    ),
+    (NewCount >= 2 -> details(Place) ; true),
+    nl.
+
+notice_items(Place) :-
+    at(X, Place),
+    write('Du siehst: '), write(X), write('.'), nl,
+    fail.
+notice_items(_).
+
+/* ===================== Bewegung ===================== */
 
 n :- go(n).
 s :- go(s).
+e :- go(e).
+w :- go(w).
 
 go(Dir) :-
     i_am_at(Here),
@@ -122,19 +212,52 @@ go(Dir) :-
     retract(i_am_at(Here)),
     assert(i_am_at(There)),
     look, !.
-go(_) :- write('You cannot go that way.'), nl.
+go(_) :-
+    write('In diese Richtung kommst du nicht weiter.'), nl.
+
+/* ===================== Engine ===================== */
+
+help :- instructions.
+quit :- halt.
 
 instructions :-
-    write('Commands:'), nl,
-    write('  help.      -> show instructions'), nl,
-    write('  n. / s.    -> go north / south'), nl,
-    write('  look.      -> look around'), nl,
-    write('  notes.     -> show discovered clues'), nl,
-    write('  talk.      -> talk to someone'), nl,
-    write('  trust_him. -> trust the character'), nl,
-    write('  doubt_him. -> doubt the character'), nl,
-    write('  quit.      -> quit the game'), nl, nl.
+    write('-------------------------------------------------------'), nl,
+    write('  Befehle:'), nl,
+    write('  n. / s. / e. / w.   -> Richtung gehen'), nl,
+    write('  look.               -> Umgebung betrachten'), nl,
+    write('  talk.               -> mit jemandem reden'), nl,
+    write('  nehmen(X).          -> Item aufheben'), nl,
+    write('  ablegen(X).         -> Item ablegen'), nl,
+    write('  inventar.           -> Inventar anzeigen'), nl,
+    write('  notes.              -> Erkenntnisse anzeigen'), nl,
+    write('  help.               -> Befehle anzeigen'), nl,
+    write('  quit.               -> Spiel beenden'), nl,
+    write('-------------------------------------------------------'), nl, nl.
+
+/* ===================== Start ===================== */
 
 start :-
+    nl,
+    write('======================================================='), nl,
+    write('              WHISPERS BETWEEN US'), nl,
+    write('======================================================='), nl,
+    nl,
+    write('Der Regen hat aufgehoert.'), nl,
+    nl,
+    write('Du weisst nicht wie lange du bewusstlos warst.'), nl,
+    write('Das Armaturenbrett ist kalt. Die Scheibe beschlagen.'), nl,
+    write('Draussen: Wald. Stille. Und etwas, das sich wie'), nl,
+    write('Beobachtetwerden anfuehlt.'), nl,
+    nl,
+    write('Dein Handy zeigt kein Signal.'), nl,
+    write('Die Vorderachse ist geknickt.'), nl,
+    write('Du kommst hier nicht weg — nicht mit dem Auto.'), nl,
+    nl,
+    write('Etwa einen Kilometer die Strasse runter siehst du Lichter.'), nl,
+    nl,
+    write('Es ist kurz nach 22 Uhr. Heute ist Vollmond.'), nl,
+    nl,
     instructions,
+    write('Du steigst aus dem Auto.'), nl,
+    nl,
     look.
