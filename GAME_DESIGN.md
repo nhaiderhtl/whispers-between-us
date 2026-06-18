@@ -261,6 +261,27 @@ Decisions in dialogue change trust. Examples:
 
 ---
 
+## Exit Display (idea, not implemented)
+
+Show available exits at the end of every `look.` output. Each exit shows the direction and destination name — with a visual marker for whether that room has been visited yet.
+
+Example output:
+```
+Exits: [n] Graveyard  [w] Inn *  [e] Mayor's House ?  [sw] Barn *
+```
+- `*` = already visited
+- `?` = never been there
+
+**Two implementation options:**
+1. **Inline in `look`** — append exits automatically after every room description. Simple, always visible.
+2. **Separate `exits.` command** — player calls it explicitly when they want to orient themselves. Less intrusive, rewards active exploration.
+
+Option 1 fits better — keeps all spatial info in one place and avoids making the player remember a command.
+
+Uses `looked_at/2` (already tracked) to determine visited vs. unvisited. Conditional paths (locked doors) could show as `[d] Cellar — locked` instead of hiding completely.
+
+---
+
 ## Clue System
 
 - `look.` first time → room description only
