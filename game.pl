@@ -1,5 +1,6 @@
-:- dynamic i_am_at/1, at/2, holding/1, trust/2.
-:- retractall(at(_, _)), retractall(i_am_at(_)), retractall(holding(_)), retractall(trust(_, _)).
+:- dynamic i_am_at/1, at/2, holding/1, trust/2, looked_at/2, clue/1.
+:- retractall(at(_, _)), retractall(i_am_at(_)), retractall(holding(_)),
+   retractall(trust(_, _)), retractall(looked_at(_, _)), retractall(clue(_)).
 
 /* Initial State */
 i_am_at(dark_hallway).
@@ -63,6 +64,51 @@ describe(dark_hallway) :-
 describe(storage_room) :-
     write('The storage room is cluttered with old crates. Marcus is standing in the corner, looking pale.'), nl.
 
+/* Details — shown only on second look, saved as clues */
+details(dark_hallway) :-
+    record_clue('Flur: Der Boden ist nass. Frische Schmutzspuren fuehren Richtung Norden.'),
+    write('Der Boden ist nass. Frische Schmutzspuren fuehren Richtung Norden.'), nl.
+
+details(storage_room) :-
+    record_clue('Abstellraum: Hinter einer alten Kiste liegt ein zerknuelltes Stueck Papier.'),
+    write('Hinter einer alten Kiste liegt ein zerknuelltes Stueck Papier.'), nl.
+
+details(_).
+
+/* Save clue only if not already known */
+record_clue(Text) :-
+    clue(Text), !.
+record_clue(Text) :-
+    assert(clue(Text)).
+
+/* Look — tracks visits per room, shows details on second look */
+look :-
+    i_am_at(Place),
+    describe(Place), nl,
+    (   looked_at(Place, Count)
+    ->  NewCount is Count + 1,
+        retract(looked_at(Place, Count)),
+        assert(looked_at(Place, NewCount))
+    ;   assert(looked_at(Place, 1)),
+        NewCount = 1
+    ),
+    (NewCount >= 2 -> details(Place) ; true),
+    nl.
+
+/* Notes — list all discovered clues */
+notes :-
+    write('=== Erkenntnisse ==='), nl,
+    list_clues.
+
+list_clues :-
+    clue(X),
+    write('  - '), write(X), nl,
+    fail.
+list_clues :-
+    \+ clue(_),
+    write('  Noch keine Erkenntnisse.'), nl, !.
+list_clues.
+
 /* Basic Engine */
 help :- instructions.
 quit :- halt.
@@ -78,22 +124,16 @@ go(Dir) :-
     look, !.
 go(_) :- write('You cannot go that way.'), nl.
 
-look :-
-    i_am_at(Place),
-    describe(Place), nl.
-
 instructions :-
-    write('Commands:
-    help. -> show instructions
-     n. -> go north
-     s. -> go south 
-     look. -> look around
-     talk. -> talk to someone
-     trust_him. -> trust the character
-     doubt_him. -> doubt the character
-     quit. or halt. -> quit the game
-     
-     '), nl.
+    write('Commands:'), nl,
+    write('  help.      -> show instructions'), nl,
+    write('  n. / s.    -> go north / south'), nl,
+    write('  look.      -> look around'), nl,
+    write('  notes.     -> show discovered clues'), nl,
+    write('  talk.      -> talk to someone'), nl,
+    write('  trust_him. -> trust the character'), nl,
+    write('  doubt_him. -> doubt the character'), nl,
+    write('  quit.      -> quit the game'), nl, nl.
 
 start :-
     instructions,

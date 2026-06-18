@@ -261,6 +261,24 @@ Entscheidungen im Dialog ändern Trust. Beispiele:
 
 ---
 
+## Erkenntnisse-System
+
+- `look.` beim ersten Mal → nur Raumbeschreibung
+- `look.` beim zweiten Mal → Beschreibung + verstecktes Detail
+- Detail wird automatisch in `clue/1` gespeichert (kein Duplikat)
+- `notes.` → zeigt alle gesammelten Erkenntnisse als Liste
+- Details sind bewusst zweideutig — klar genug um aufzufallen, nicht klar genug um sofort zu verstehen
+
+### Detail-Texte pro Raum
+
+| Raum | Detail (ab 2. look) |
+|---|---|
+| `dark_hallway` | Frische Schmutzspuren Richtung Norden |
+| `storage_room` | Zerknülltes Papier hinter Kiste |
+| *(weitere Räume folgen)* | |
+
+---
+
 ## Zeitdruck
 
 Mitternacht als Grenze. Mechanik: Aktionen verbrauchen Zeit (implizit). Glocke läuten gibt mehr Zeit. Nach Mitternacht: Waldpfad gesperrt, bestimmte Charaktere nicht mehr ansprechbar.
@@ -301,6 +319,8 @@ Mitternacht als Grenze. Mechanik: Aktionen verbrauchen Zeit (implizit). Glocke l
 |---|---|
 | Bewegung n/s | ✅ implementiert |
 | look / describe | ✅ implementiert |
+| Details beim zweiten look | ✅ implementiert (`looked_at/2` zählt Besuche pro Raum) |
+| Erkenntnisse-System (`notes.`) | ✅ implementiert (`clue/1` dynamisch, kein Duplikat) |
 | talk / interact | ✅ implementiert (marcus) |
 | Trust-System (2 Stufen) | ✅ implementiert (neutral/trusted/doubted) |
 | Trust-System (5 Stufen) | ⬜ geplant |
