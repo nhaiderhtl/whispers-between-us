@@ -325,10 +325,14 @@ Midnight is the limit. Mechanic: actions consume time (implicit). Ringing the be
 | Item display (`notice_items`) | ✅ implemented |
 | take / drop / inventory | ✅ implemented |
 | Starting room `crash_site` | ✅ implemented |
-| Rooms: crash_site, forest_path, village_entrance | ✅ implemented |
-| talk / interact — Erna | ✅ implemented (neutral/trusted/doubted) |
+| All 12 rooms implemented | ✅ crash_site, forest_path, village_entrance, village_square, inn, inn_cellar, graveyard, church_interior, crypt, mayors_house, barn, forest |
+| All 6 characters implemented | ✅ Erna, Hilde, Jakob, Benedikt, Mia, Otto — all with trust-based dialogue |
+| All 10 items placed | ✅ flashlight, rope, well_note, mirror, cellar_key, hildes_diary, church_record, crypt_code, letter, car_key, ottos_diary, mayors_key |
+| Conditional paths | ✅ inn→cellar (trust/key), crypt (crypt_code), mayors_house (benedikt trust/key), forest (mirror) |
+| read_item(X) mechanic | ✅ all documents have full readable content |
+| confront_jakob | ✅ unlocks only if tire tracks + diary clue found |
+| Trust decisions all characters | ✅ trust_her, doubt_her, trust_hilde, doubt_hilde, trust_jakob, doubt_jakob, trust_benedikt, doubt_benedikt, trust_otto, doubt_otto |
 | Trust system (5 levels) | ⬜ planned |
-| Further rooms (Village Square, Inn, …) | ⬜ planned |
 | Time pressure / midnight | ⬜ planned |
-| Puzzles | ⬜ planned |
 | Endings | ⬜ planned |
+| Ring bell puzzle | ⬜ planned |
