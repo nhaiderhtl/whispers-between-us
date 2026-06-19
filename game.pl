@@ -1,5 +1,5 @@
 :- dynamic i_am_at/1, at/2, holding/1, trust/2, looked_at/2, clue/1,
-           game_time/1, deadline/1, bell_rung/0, game_over/0.
+           game_time/1, deadline/1, bell_rung/0, game_over/0, hinted/1.
 :- retractall(at(_, _)), retractall(i_am_at(_)), retractall(holding(_)),
    retractall(trust(_, _)), retractall(looked_at(_, _)), retractall(clue(_)),
    retractall(game_time(_)), retractall(deadline(_)),
@@ -29,7 +29,8 @@ path(village_square,   s,  village_entrance).
 path(village_square, w, inn) :-
     \+ trust(hilde, feared), !.
 path(village_square, w, inn) :-
-    write('The door is locked. Through the glass, the inn is dark.'), nl, fail.
+    write('The door is locked. Through the glass, the inn is dark.'), nl,
+    write('You could try knocking. (knock.)'), nl, fail.
 path(inn,              e,  village_square).
 path(village_square,   n,  graveyard).
 path(graveyard,        s,  village_square).
@@ -728,7 +729,9 @@ show_room_actions :- i_am_at(barn),             !, show_character_name(barn,    
 show_room_actions :- i_am_at(graveyard),        !, show_character_name(graveyard,        'Mia').
 show_room_actions :- i_am_at(church_interior),  !, show_character_name(church_interior,  'Father Benedikt'), show_bell_action.
 show_room_actions :- i_am_at(mayors_house),     !, show_character_name(mayors_house,     'Mayor Otto').
-show_room_actions :- i_am_at(forest),           !, write('The trail leads out. You could leave it all behind.'), nl.
+show_room_actions :- i_am_at(forest),           !,
+    write('The trail leads out. You could leave it all behind.'), nl,
+    (hinted(escape) -> write('(escape.)'), nl ; assert(hinted(escape))).
 show_room_actions.
 
 show_character_name(Place, Name) :-
@@ -740,7 +743,8 @@ show_bell_action :-
     bell_rung, !.
 show_bell_action :-
     holding(rope), !,
-    write('The rope is in your hands. The bell frame waits above.'), nl.
+    write('The rope is in your hands. The bell frame waits above.'), nl,
+    (hinted(ring_bell) -> write('(ring_bell.)'), nl ; assert(hinted(ring_bell))).
 show_bell_action.
 
 show_jakob_actions :-
@@ -752,14 +756,16 @@ show_jakob_confront_action :-
 show_jakob_confront_action :-
     clue('Crash site: Two sets of tire tracks on the road. Someone drove very close to you just before the ditch.'),
     clue('Hilde\'s diary: Jakob threatened Hilde into silence. She knows he ran you off the road.'), !,
-    write('The tracks. The diary. The pieces fit together now.'), nl.
+    write('The tracks. The diary. The pieces fit together now.'), nl,
+    (hinted(confront_jakob) -> write('(confront_jakob.)'), nl ; assert(hinted(confront_jakob))).
 show_jakob_confront_action.
 
 show_jakob_follow_action :-
     trust(jakob, feared), !.
 show_jakob_follow_action :-
     (trust(jakob, trusted) ; trust(jakob, devoted) ; holding(car_key)), !,
-    write('His eyes keep drifting to the door.'), nl.
+    write('His eyes keep drifting to the door.'), nl,
+    (hinted(follow_jakob) -> write('(follow_jakob.)'), nl ; assert(hinted(follow_jakob))).
 show_jakob_follow_action.
 
 show_erna_action :-
@@ -769,7 +775,8 @@ show_erna_action :-
     clue('Otto\'s diary: Erna wrote the interview letter herself, three months ago. She planned Leon\'s arrival without telling the village.'),
     bell_rung,
     trust(hilde, devoted), !,
-    write('You have it all. The letter. The truth behind it. The bell bought you time. And Hilde is ready.'), nl.
+    write('You have it all. The letter. The truth behind it. The bell bought you time. And Hilde is ready.'), nl,
+    (hinted(confront_erna) -> write('(confront_erna.)'), nl ; assert(hinted(confront_erna))).
 show_erna_action.
 
 /* ===================== Movement ===================== */
@@ -921,7 +928,7 @@ reset_state :-
     retractall(i_am_at(_)), retractall(at(_, _)), retractall(holding(_)),
     retractall(trust(_, _)), retractall(looked_at(_, _)), retractall(clue(_)),
     retractall(game_time(_)), retractall(deadline(_)),
-    retractall(bell_rung), retractall(game_over),
+    retractall(bell_rung), retractall(game_over), retractall(hinted(_)),
     assert(i_am_at(crash_site)),
     assert(trust(erna, neutral)), assert(trust(hilde, neutral)),
     assert(trust(jakob, neutral)), assert(trust(benedikt, neutral)),
