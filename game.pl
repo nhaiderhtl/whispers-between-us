@@ -26,7 +26,10 @@ path(forest_path,      n,  village_entrance).
 path(village_entrance, s,  forest_path).
 path(village_entrance, n,  village_square).
 path(village_square,   s,  village_entrance).
-path(village_square,   w,  inn).
+path(village_square, w, inn) :-
+    \+ trust(hilde, feared), !.
+path(village_square, w, inn) :-
+    write('The door is locked. Through the glass, the inn is dark.'), nl, fail.
 path(inn,              e,  village_square).
 path(village_square,   n,  graveyard).
 path(graveyard,        s,  village_square).
@@ -156,8 +159,8 @@ describe(crypt) :-
 
 describe(mayors_house) :-
     write('A neat entrance hall, cold hearth, framed certificates everywhere.'), nl,
-    write('Mayor Otto stands at the top of the stairs, looking down'), nl,
-    write('at you with an expression you cannot quite read.'), nl.
+    write('A man stands at the top of the stairs, looking down at you'), nl,
+    write('with an expression you cannot quite read.'), nl.
 
 describe(barn) :-
     write('The barn door swings open as you approach.'), nl,
@@ -494,7 +497,10 @@ advance_time(N) :-
 print_time :-
     game_time(T), Total is 1320 + T,
     H is (Total // 60) mod 24, M is Total mod 60,
-    format('The church clock reads ~|~`0t~d~2|:~|~`0t~d~2|.~n', [H, M]).
+    (M < 10
+    -> format('The church clock reads ~d:0~d.~n', [H, M])
+    ;  format('The church clock reads ~d:~d.~n',  [H, M])
+    ).
 
 time :- print_time.
 
@@ -527,9 +533,21 @@ take(crypt_code) :-
     write('It is too dark to make out the inscription.'), nl, !.
 
 take(mirror) :-
-    at(mirror, inn), trust(hilde, neutral),
-    write('Hilde looks up. "That belonged to my mother. Please don''t take it."'), nl,
-    write('Take it anyway? (take_mirror.)'), nl, !.
+    at(mirror, inn),
+    trust(hilde, devoted), !,
+    retract(at(mirror, inn)),
+    assert(holding(mirror)),
+    write('Hilde lifts the mirror from the wall herself and holds it out.'), nl,
+    write('"It always showed more than a reflection," she says.'), nl.
+
+take(mirror) :-
+    at(mirror, inn), !,
+    retract(trust(hilde, _)), assert(trust(hilde, feared)),
+    retract(i_am_at(_)), assert(i_am_at(village_square)),
+    write('"Get out."'), nl,
+    write('She is around the counter before you can react.'), nl,
+    write('The door closes hard behind you.'), nl,
+    write('You are standing in the square. The inn light goes out.'), nl.
 
 take(hildes_diary) :-
     at(hildes_diary, inn_cellar),
@@ -557,15 +575,6 @@ take(X) :-
 take(_) :-
     write('You do not see that here.'), nl.
 
-take_mirror :-
-    i_am_at(inn), at(mirror, inn),
-    retract(at(mirror, inn)),
-    assert(holding(mirror)),
-    retract(trust(hilde, _)), assert(trust(hilde, doubted)),
-    write('You take it. Hilde says nothing.'), nl,
-    write('But something closes in her expression.'), nl, !.
-take_mirror :-
-    write('There is no mirror to take.'), nl.
 
 drop(X) :-
     holding(X), i_am_at(Place),
@@ -573,6 +582,16 @@ drop(X) :-
     write('Dropped.'), nl, !.
 drop(_) :-
     write('You are not carrying that.'), nl.
+
+knock :-
+    i_am_at(village_square), trust(hilde, feared), !,
+    retract(trust(hilde, _)), assert(trust(hilde, neutral)),
+    write('You knock. Once. Twice.'), nl,
+    write('A long pause. The light behind the glass shifts.'), nl,
+    write('The bolt clicks. The door opens just a crack.'), nl,
+    write('"The mirror stays where it is," she says. "Understood?"'), nl.
+knock :-
+    write('There is nothing to knock on here.'), nl.
 
 inventory :-
     write('=== Inventory ==='), nl,
@@ -672,7 +691,6 @@ list_clues.
 look :-
     i_am_at(Place),
     describe(Place), nl,
-    notice_items(Place),
     (   looked_at(Place, Count)
     ->  NewCount is Count + 1,
         retract(looked_at(Place, Count)),
@@ -680,7 +698,8 @@ look :-
     ;   assert(looked_at(Place, 1)),
         NewCount = 1
     ),
-    (NewCount >= 2 -> details(Place) ; true),
+    (NewCount >= 2 -> notice_items(Place) ; true),
+    (NewCount >= 3 -> details(Place) ; true),
     nl,
     show_exits,
     show_room_actions,
@@ -701,39 +720,47 @@ show_exits :-
 
 /* ===================== Room Actions ===================== */
 
-show_room_actions :- i_am_at(church_interior), !, show_bell_action.
-show_room_actions :- i_am_at(barn),            !, show_jakob_confront_action, show_jakob_follow_action.
-show_room_actions :- i_am_at(village_entrance),!, show_erna_action.
-show_room_actions :- i_am_at(forest),          !, write('The hidden trail leads out. (escape.)'), nl.
+show_room_actions :- i_am_at(village_square), trust(hilde, feared), !,
+    write('The inn is dark. The door does not open when you try the handle.'), nl.
+show_room_actions :- i_am_at(village_entrance), !, show_character_name(village_entrance, 'Erna'),        show_erna_action.
+show_room_actions :- i_am_at(inn),              !, show_character_name(inn,              'Hilde').
+show_room_actions :- i_am_at(barn),             !, show_character_name(barn,             'Jakob'),       show_jakob_actions.
+show_room_actions :- i_am_at(graveyard),        !, show_character_name(graveyard,        'Mia').
+show_room_actions :- i_am_at(church_interior),  !, show_character_name(church_interior,  'Father Benedikt'), show_bell_action.
+show_room_actions :- i_am_at(mayors_house),     !, show_character_name(mayors_house,     'Mayor Otto').
+show_room_actions :- i_am_at(forest),           !, write('The trail leads out. You could leave it all behind.'), nl.
 show_room_actions.
+
+show_character_name(Place, Name) :-
+    looked_at(Place, N), N >= 2, !,
+    write(Name), write(' is here.'), nl.
+show_character_name(_, _).
 
 show_bell_action :-
     bell_rung, !.
 show_bell_action :-
     holding(rope), !,
-    write('You can ring the church bell. (ring_bell.)'), nl.
-show_bell_action :-
-    record_clue('Church interior: The bell rope frame needs a rope to reach it.'),
-    write('A bell rope frame hangs above, but you have nothing to reach it with.'), nl.
+    write('The rope is in your hands. The bell frame waits above.'), nl.
+show_bell_action.
+
+show_jakob_actions :-
+    show_jakob_confront_action,
+    show_jakob_follow_action.
 
 show_jakob_confront_action :-
     trust(jakob, feared), !.
 show_jakob_confront_action :-
     clue('Crash site: Two sets of tire tracks on the road. Someone drove very close to you just before the ditch.'),
     clue('Hilde\'s diary: Jakob threatened Hilde into silence. She knows he ran you off the road.'), !,
-    write('You have enough to confront Jakob. (confront_jakob.)'), nl.
-show_jakob_confront_action :-
-    record_clue('Barn: Jakob is hiding something about the night of the crash. More evidence may reveal the truth.'),
-    write('Something about Jakob does not add up. You need more evidence.'), nl.
+    write('The tracks. The diary. The pieces fit together now.'), nl.
+show_jakob_confront_action.
 
 show_jakob_follow_action :-
     trust(jakob, feared), !.
 show_jakob_follow_action :-
     (trust(jakob, trusted) ; trust(jakob, devoted) ; holding(car_key)), !,
-    write('Jakob could lead you out. (follow_jakob.)'), nl.
-show_jakob_follow_action :-
-    record_clue('Barn: Jakob might lead you out — but not until you have his trust or leverage over him.'),
-    write('Jakob is here, but not ready to help you leave. Yet.'), nl.
+    write('His eyes keep drifting to the door.'), nl.
+show_jakob_follow_action.
 
 show_erna_action :-
     trust(erna, feared), !.
@@ -742,10 +769,8 @@ show_erna_action :-
     clue('Otto\'s diary: Erna wrote the interview letter herself, three months ago. She planned Leon\'s arrival without telling the village.'),
     bell_rung,
     trust(hilde, devoted), !,
-    write('You are ready to face Erna. (confront_erna.)'), nl.
-show_erna_action :-
-    record_clue('Village entrance: To face Erna you need proof she wrote the letter, Otto\'s account, the bell rung, and Hilde ready to leave.'),
-    write('Erna is here. You are not ready to confront her yet.'), nl.
+    write('You have it all. The letter. The truth behind it. The bell bought you time. And Hilde is ready.'), nl.
+show_erna_action.
 
 /* ===================== Movement ===================== */
 
@@ -930,7 +955,8 @@ start :-
     nl,
     write('It is just past 10 PM. Tonight is a full moon.'), nl,
     nl,
-    instructions,
+    write('(Type help. for a list of commands.)'), nl,
+    nl,
     write('You step out of the car.'), nl,
     nl,
     look.
