@@ -60,6 +60,30 @@ path(village_square, nw, forest) :-
 path(village_square, nw, forest) :-
     write('The forest edge is lost in darkness. You cannot find a way through.'), nl, fail.
 
+/* Raw exits for direction display (no side effects) */
+raw_exit(crash_site,       n,  forest_path).
+raw_exit(forest_path,      s,  crash_site).
+raw_exit(forest_path,      n,  village_entrance).
+raw_exit(village_entrance, s,  forest_path).
+raw_exit(village_entrance, n,  village_square).
+raw_exit(village_square,   s,  village_entrance).
+raw_exit(village_square,   w,  inn).
+raw_exit(inn,              e,  village_square).
+raw_exit(village_square,   n,  graveyard).
+raw_exit(graveyard,        s,  village_square).
+raw_exit(graveyard,        n,  church_interior).
+raw_exit(church_interior,  s,  graveyard).
+raw_exit(mayors_house,     w,  village_square).
+raw_exit(village_square,   sw, barn).
+raw_exit(barn,             ne, village_square).
+raw_exit(forest,           se, village_square).
+raw_exit(inn,              d,  inn_cellar).
+raw_exit(inn_cellar,       u,  inn).
+raw_exit(church_interior,  d,  crypt).
+raw_exit(crypt,            u,  church_interior).
+raw_exit(village_square,   e,  mayors_house).
+raw_exit(village_square,   nw, forest).
+
 /* ===================== Items ===================== */
 
 at(flashlight,    crash_site).
@@ -234,7 +258,7 @@ interact(erna) :- trust(erna, neutral),
     write('"You should not be here. Not tonight."'), nl,
     write('A pause. "But you are. Go to the inn. Hilde will let you in."'), nl,
     write('She turns away.'), nl,
-    write('Do you trust her? (trust_her. / doubt_her.)'), nl, !.
+    write('Do you trust her? (trust. / doubt.)'), nl, !.
 interact(erna) :- trust(erna, trusted),
     write('She turns her head almost imperceptibly toward the church.'), nl,
     write('"The priest knows more than he says. Ask him about 1987."'), nl, !.
@@ -248,7 +272,7 @@ interact(hilde) :- trust(hilde, neutral),
     write('"Rough night? You can stay here — no charge.'), nl,
     write('The roads are bad in weather like this."'), nl,
     write('She is warm. Too warm for 10 PM.'), nl,
-    write('Do you trust her? (trust_hilde. / doubt_hilde.)'), nl, !.
+    write('Do you trust her? (trust. / doubt.)'), nl, !.
 interact(hilde) :- trust(hilde, trusted),
     write('"There is something downstairs you should see.'), nl,
     write('Someone has been staying here. Not a guest."'), nl,
@@ -269,7 +293,7 @@ interact(jakob) :- trust(jakob, neutral),
     write('"You the one whose car went off the road? Saw it happen."'), nl,
     write('He pauses just a fraction too long.'), nl,
     write('"I have a car. I can drive you out when you''re ready."'), nl,
-    write('Do you trust him? (trust_jakob. / doubt_jakob.)'), nl, !.
+    write('Do you trust him? (trust. / doubt.)'), nl, !.
 interact(jakob) :- trust(jakob, trusted),
     write('Jakob nods and pulls a key from his pocket.'), nl,
     write('"Car is just outside the village. Follow me. Don''t stop."'), nl,
@@ -289,7 +313,7 @@ interact(benedikt) :- trust(benedikt, neutral),
     write('He does not stand. Keeps his eyes on the altar.'), nl,
     write('"We do not get visitors. Especially not tonight."'), nl,
     write('A long silence. "The inn is still open. Go there."'), nl,
-    write('Do you trust him? (trust_benedikt. / doubt_benedikt.)'), nl, !.
+    write('Do you trust him? (trust. / doubt.)'), nl, !.
 interact(benedikt) :- trust(benedikt, trusted),
     write('"The procession is not what you think.'), nl,
     write('It is a ritual of preservation. Of continuation."'), nl,
@@ -322,7 +346,7 @@ interact(otto) :- trust(otto, neutral),
     write('The mayor descends two steps and stops.'), nl,
     write('"This is a private residence. The inn is across the square."'), nl,
     write('His voice is practiced. Official.'), nl,
-    write('Do you trust him? (trust_otto. / doubt_otto.)'), nl, !.
+    write('Do you trust him? (trust. / doubt.)'), nl, !.
 interact(otto) :- trust(otto, trusted),
     write('Otto sits down heavily on the stairs.'), nl,
     write('"Erna came to me in 1987. Told me what the village needed to survive.'), nl,
@@ -335,48 +359,50 @@ interact(otto) :- trust(otto, doubted),
 
 /* ===================== Trust Decisions ===================== */
 
-trust_her :-
-    i_am_at(village_entrance), trust(erna, neutral),
-    retract(trust(erna, _)), assert(trust(erna, trusted)),
-    write('Something about her feels sincere. Or like she has nothing to gain.'), nl, !.
-trust_her :- i_am_at(village_entrance),
-    write('You have already made your decision.'), nl, !.
+current_char(erna)     :- i_am_at(village_entrance).
+current_char(hilde)    :- i_am_at(inn).
+current_char(jakob)    :- i_am_at(barn).
+current_char(benedikt) :- i_am_at(church_interior).
+current_char(otto)     :- i_am_at(mayors_house).
 
-doubt_her :-
-    i_am_at(village_entrance), trust(erna, neutral),
-    retract(trust(erna, _)), assert(trust(erna, doubted)),
-    write('Why did she know your name? You note her words — but not trust them.'), nl, !.
-doubt_her :- i_am_at(village_entrance),
-    write('You have already made your decision.'), nl, !.
+trust_msg(erna,     'Something about her feels sincere. Or like she has nothing to gain.').
+trust_msg(hilde,    'Too warm for 10 PM — but maybe that is just who she is.').
+trust_msg(jakob,    'He seems nervous but sincere. You need a car.').
+trust_msg(benedikt, 'He has not lied to you yet — or at least you cannot tell.').
+trust_msg(otto,     'He looks more scared than threatening. He might actually talk.').
 
-trust_hilde :-
-    i_am_at(inn), trust(hilde, neutral),
-    retract(trust(hilde, _)), assert(trust(hilde, trusted)),
-    write('Too warm for 10 PM — but maybe that is just who she is.'), nl, !.
-trust_hilde :- i_am_at(inn),
-    write('You have already made your decision.'), nl, !.
-
-doubt_hilde :-
-    i_am_at(inn), trust(hilde, neutral),
-    retract(trust(hilde, _)), assert(trust(hilde, doubted)),
-    write('Too friendly. Too ready. You keep your distance.'), nl, !.
-doubt_hilde :- i_am_at(inn),
-    write('You have already made your decision.'), nl, !.
-
-trust_jakob :-
-    i_am_at(barn), trust(jakob, neutral),
-    retract(trust(jakob, _)), assert(trust(jakob, trusted)),
-    write('He seems nervous but sincere. You need a car.'), nl, !.
-trust_jakob :- i_am_at(barn),
-    write('You have already made your decision.'), nl, !.
-
-doubt_jakob :-
-    i_am_at(barn), trust(jakob, neutral),
-    retract(trust(jakob, _)), assert(trust(jakob, doubted)),
+doubt_msg(erna) :-
+    write('Why did she know your name? You note her words — but not trust them.'), nl.
+doubt_msg(hilde) :-
+    write('Too friendly. Too ready. You keep your distance.'), nl.
+doubt_msg(jakob) :-
     write('He said he saw it happen. From where, exactly?'), nl,
-    write('You file it away and say nothing.'), nl, !.
-doubt_jakob :- i_am_at(barn),
-    write('You have already made your decision.'), nl, !.
+    write('You file it away and say nothing.'), nl.
+doubt_msg(benedikt) :-
+    write('A priest conducting midnight rituals in an unmapped village.'), nl,
+    write('You keep your thoughts to yourself.'), nl.
+doubt_msg(otto) :-
+    write('He runs this village. Whatever happened here, he is not innocent.'), nl.
+
+trust :-
+    current_char(Char), trust(Char, neutral), !,
+    retract(trust(Char, _)), assert(trust(Char, trusted)),
+    trust_msg(Char, Msg), write(Msg), nl.
+trust :-
+    current_char(_), !,
+    write('You have already made your decision.'), nl.
+trust :-
+    write('There is no one here to trust or doubt.'), nl.
+
+doubt :-
+    current_char(Char), trust(Char, neutral), !,
+    retract(trust(Char, _)), assert(trust(Char, doubted)),
+    doubt_msg(Char).
+doubt :-
+    current_char(_), !,
+    write('You have already made your decision.'), nl.
+doubt :-
+    write('There is no one here to trust or doubt.'), nl.
 
 confront_jakob :-
     i_am_at(barn),
@@ -393,34 +419,6 @@ confront_jakob :- i_am_at(barn),
 confront_jakob :-
     write('Jakob is not here.'), nl.
 
-trust_benedikt :-
-    i_am_at(church_interior), trust(benedikt, neutral),
-    retract(trust(benedikt, _)), assert(trust(benedikt, trusted)),
-    write('He has not lied to you yet — or at least you cannot tell.'), nl, !.
-trust_benedikt :- i_am_at(church_interior),
-    write('You have already made your decision.'), nl, !.
-
-doubt_benedikt :-
-    i_am_at(church_interior), trust(benedikt, neutral),
-    retract(trust(benedikt, _)), assert(trust(benedikt, doubted)),
-    write('A priest conducting midnight rituals in an unmapped village.'), nl,
-    write('You keep your thoughts to yourself.'), nl, !.
-doubt_benedikt :- i_am_at(church_interior),
-    write('You have already made your decision.'), nl, !.
-
-trust_otto :-
-    i_am_at(mayors_house), trust(otto, neutral),
-    retract(trust(otto, _)), assert(trust(otto, trusted)),
-    write('He looks more scared than threatening. He might actually talk.'), nl, !.
-trust_otto :- i_am_at(mayors_house),
-    write('You have already made your decision.'), nl, !.
-
-doubt_otto :-
-    i_am_at(mayors_house), trust(otto, neutral),
-    retract(trust(otto, _)), assert(trust(otto, doubted)),
-    write('He runs this village. Whatever happened here, he is not innocent.'), nl, !.
-doubt_otto :- i_am_at(mayors_house),
-    write('You have already made your decision.'), nl, !.
 
 /* ===================== Trust Ladder (5 levels) ===================== */
 /* feared(-2) < doubted(-1) < neutral(0) < trusted(+1) < devoted(+2) */
@@ -684,7 +682,70 @@ look :-
     ),
     (NewCount >= 2 -> details(Place) ; true),
     nl,
+    show_exits,
+    show_room_actions,
+    nl,
     print_time, nl, !.
+
+/* ===================== Exits Display ===================== */
+
+show_exits :-
+    i_am_at(Here),
+    findall(Dir-There, raw_exit(Here, Dir, There), Exits),
+    (Exits = [] -> true ;
+     write('You can go:'),
+     forall(member(Dir-There, Exits),
+            (write(' '), write(Dir),
+             (looked_at(There, _) -> write(' ('), write(There), write(')') ; true))),
+     nl).
+
+/* ===================== Room Actions ===================== */
+
+show_room_actions :- i_am_at(church_interior), !, show_bell_action.
+show_room_actions :- i_am_at(barn),            !, show_jakob_confront_action, show_jakob_follow_action.
+show_room_actions :- i_am_at(village_entrance),!, show_erna_action.
+show_room_actions :- i_am_at(forest),          !, write('The hidden trail leads out. (escape.)'), nl.
+show_room_actions.
+
+show_bell_action :-
+    bell_rung, !.
+show_bell_action :-
+    holding(rope), !,
+    write('You can ring the church bell. (ring_bell.)'), nl.
+show_bell_action :-
+    record_clue('Church interior: The bell rope frame needs a rope to reach it.'),
+    write('A bell rope frame hangs above, but you have nothing to reach it with.'), nl.
+
+show_jakob_confront_action :-
+    trust(jakob, feared), !.
+show_jakob_confront_action :-
+    clue('Crash site: Two sets of tire tracks on the road. Someone drove very close to you just before the ditch.'),
+    clue('Hilde\'s diary: Jakob threatened Hilde into silence. She knows he ran you off the road.'), !,
+    write('You have enough to confront Jakob. (confront_jakob.)'), nl.
+show_jakob_confront_action :-
+    record_clue('Barn: Jakob is hiding something about the night of the crash. More evidence may reveal the truth.'),
+    write('Something about Jakob does not add up. You need more evidence.'), nl.
+
+show_jakob_follow_action :-
+    trust(jakob, feared), !.
+show_jakob_follow_action :-
+    (trust(jakob, trusted) ; trust(jakob, devoted) ; holding(car_key)), !,
+    write('Jakob could lead you out. (follow_jakob.)'), nl.
+show_jakob_follow_action :-
+    record_clue('Barn: Jakob might lead you out — but not until you have his trust or leverage over him.'),
+    write('Jakob is here, but not ready to help you leave. Yet.'), nl.
+
+show_erna_action :-
+    trust(erna, feared), !.
+show_erna_action :-
+    clue('The letter: The Innsbruck interview was fabricated. Someone lured you here. The handwriting is familiar.'),
+    clue('Otto\'s diary: Erna wrote the interview letter herself, three months ago. She planned Leon\'s arrival without telling the village.'),
+    bell_rung,
+    trust(hilde, devoted), !,
+    write('You are ready to face Erna. (confront_erna.)'), nl.
+show_erna_action :-
+    record_clue('Village entrance: To face Erna you need proof she wrote the letter, Otto\'s account, the bell rung, and Hilde ready to leave.'),
+    write('Erna is here. You are not ready to confront her yet.'), nl.
 
 /* ===================== Movement ===================== */
 
@@ -823,13 +884,8 @@ instructions :-
     write('  inventory.      -> show carried items'), nl,
     write('  notes.          -> show discovered clues'), nl,
     write('  time.           -> check the clock (midnight is the deadline)'), nl,
-    write('  ring_bell.      -> ring the church bell (needs rope)'), nl,
     write('  reassure(X).    -> deepen trust with a character'), nl,
     write('  confide(X).     -> share what you have learned'), nl,
-    write('  confront_jakob. -> confront Jakob with evidence'), nl,
-    write('  confront_erna.  -> face Erna at the village entrance'), nl,
-    write('  follow_jakob.   -> let Jakob lead you out'), nl,
-    write('  escape.         -> take the forest trail out (in the forest)'), nl,
     write('  help.           -> show this list'), nl,
     write('  quit.           -> quit the game'), nl,
     write('-------------------------------------------------------'), nl, nl.
