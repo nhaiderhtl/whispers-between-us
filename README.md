@@ -4,6 +4,12 @@
 
 ---
 
+## What Is This?
+
+*Whispers Between Us* is a text-based mystery set in an isolated Alpine village on a full-moon night. You navigate twelve rooms, collect clues, and build — or destroy — trust with six characters who each have their own version of the truth. The game never tells you what to do next. It only shows you what is there, and lets you decide what it means. Every decision you make changes what you can access, what people tell you, and how the night ends. The same rooms look different the second time you play.
+
+---
+
 ## Background
 
 The village of Kalmbach lies somewhere in the Alps — not on any modern map, not found by any navigation system. The nearest town is 40 kilometers of gravel road away. The residents want it that way.
@@ -40,20 +46,22 @@ You just have to figure out who you can trust — before midnight comes.
 
 | Command | Action |
 |---|---|
-| `n.` `s.` `e.` `w.` | Move in a direction |
-| `look.` | Examine surroundings |
+| `n.` `s.` `e.` `w.` `ne.` `sw.` `nw.` `se.` `u.` `d.` | Move |
+| `look.` | Examine your surroundings |
 | `talk.` | Speak to someone nearby |
 | `take(X).` | Pick up an item |
 | `drop(X).` | Put down an item |
+| `read_item(X).` | Read a document |
 | `inventory.` | Show carried items |
 | `notes.` | Show discovered clues |
-| `time.` | Check the clock — midnight is the deadline |
-| `ring_bell.` | Ring the church bell to buy time (needs rope) |
-| `reassure(X).` / `confide(X).` | Deepen your bond with a character |
-| `confront_jakob.` / `confront_erna.` | Force the truth, with the right evidence |
-| `follow_jakob.` | Let Jakob lead you out |
-| `escape.` | Take the forest trail out (from the forest) |
-| `help.` | Show all commands |
+| `time.` | Check the clock (midnight is the deadline) |
+| `reassure.` | Deepen trust with a nearby character |
+| `confide.` | Share what you have learned with a nearby character |
+| `help.` | Show this list |
 | `quit.` | Quit the game |
 
-> **Three endings.** Midnight ends everything. Trust the wrong person and it ends sooner. Ring the bell, gather proof, and you may leave on your own terms — or slip out alone through the trees.
+> Some actions are not listed here. The game will show you when the moment is right.
+
+---
+
+**Three endings.** What happens at midnight depends entirely on what you chose to believe — and who chose to believe in you.
