@@ -525,6 +525,8 @@ ring_bell :-
 
 /* ===================== Take / Drop / Inventory ===================== */
 
+take(X) :- var(X), !, write('Take what?'), nl.
+
 take(rope) :-
     at(rope, crash_site), \+ holding(flashlight),
     write('It is too dark to see into the trunk.'), nl, !.
@@ -920,6 +922,8 @@ instructions :-
     write('  confide(X).     -> share what you have learned'), nl,
     write('  help.           -> show this list'), nl,
     write('  quit.           -> quit the game'), nl,
+    write('-------------------------------------------------------'), nl,
+    write('  If you feel stuck, try looking closer... people change.'), nl,
     write('-------------------------------------------------------'), nl, nl.
 
 /* ===================== Start ===================== */
