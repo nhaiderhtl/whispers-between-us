@@ -11,6 +11,8 @@
 - **Multiple truths:** Characters do not always lie deliberately — some believe their own version. The player must judge.
 - **Reversible trust:** New evidence can completely overturn earlier assessments. Early decisions are not permanent.
 - **Rewarded exploration:** Players who visit all rooms and question all characters understand more — but will never understand everything.
+- **Progressive reveal:** Characters are anonymous on first encounter. Names, actions, and relationships surface through repeated visits and gathered evidence. No command is ever shown before its conditions are met.
+- **No hand-holding:** The game never tells the player what to do next. Clues, narrative atmosphere, and contextual room text guide discovery. The player figures out commands through context, not menus.
 
 ---
 
@@ -24,7 +26,7 @@
 
 **What the player knows at the start:**
 - Crash, no signal, lights in the village
-- An old woman at the village entrance stares at him
+- An old woman at the village entrance watches him
 - It is a full moon
 
 **What the player never fully learns:**
@@ -45,13 +47,13 @@
       |
 [Village Square] ──── [Inn] ──── [Inn Cellar]
       |
-      ├──── [Church / Graveyard] ──── [Church Interior] ──── [Crypt]
+      ├──── [Graveyard] ──── [Church Interior] ──── [Crypt]
       |
       ├──── [Mayor's House]
       |
       └──── [Barn]
 
-[Forest] (unlockable from Village Square, only at night with mirror)
+[Forest] (unlockable from Village Square with mirror)
 ```
 
 ---
@@ -60,74 +62,84 @@
 
 ### Crash Site
 - **Description:** Roadside ditch, front axle snapped, rain, fog. Lights visible in the distance.
-- **Items:** flashlight (in glove compartment), rope (in trunk — accessible after puzzle)
+- **Items:** flashlight, rope
 - **Connections:** N → Forest Path
-- **Details:** Tire tracks on the road — two sets. A vehicle pushed you. Player may not notice immediately.
+- **Details (3rd look):** Tire tracks on the road — two sets. A vehicle pushed you.
 
 ### Forest Path
 - **Description:** Narrow trail, trees close in overhead. Sounds in the undergrowth.
 - **Items:** —
 - **Connections:** S → Crash Site, N → Village Entrance
-- **Details:** Fresh footprints in the mud heading toward the village — several people, very recent.
+- **Details (3rd look):** Fresh footprints in the mud heading toward the village — several people, very recent.
 
 ### Village Entrance
-- **Description:** Weathered sign: *"Kalmbach — Est. 1648."* Erna stands motionless beside it.
-- **Character:** Erna
+- **Description:** Weathered sign: *"Kalmbach — Est. 1648."* An old woman stands motionless at the road's edge.
+- **Character:** Erna (named on 2nd+ visit)
 - **Items:** —
 - **Connections:** S → Forest Path, N → Village Square
+- **Room action:** When conditions for `confront_erna.` are met, a narrative line appears: *"You have it all. The letter. The truth behind it. The bell bought you time. And Hilde is ready."*
 
 ### Village Square
-- **Description:** Small square, well in the center. Shutters closed everywhere. No one visible except distant shadows.
-- **Items:** Note at the well (anonymous: *"Trust no one who helps you too quickly."*)
-- **Connections:** W → Inn, N → Church/Graveyard, E → Mayor's House, S → Village Entrance, SW → Barn
+- **Description:** Small square, well at center. Shutters closed everywhere. No one visible.
+- **Items:** Note at the well
+- **Connections:** W → Inn (locked if `trust(hilde, feared)`), N → Graveyard, E → Mayor's House (locked), S → Village Entrance, SW → Barn, NW → Forest (locked without mirror)
+- **Room action:** If `trust(hilde, feared)`: *"The inn is dark. The door does not open when you try the handle."*
 
 ### Inn
-- **Description:** Warm, smells of woodsmoke. Hilde wipes the counter. Too friendly for this hour.
-- **Character:** Hilde
-- **Items:** mirror (on wall, costs time and Hilde's trust), key to inn cellar (behind counter)
-- **Connections:** E → Village Square, stairs → Inn Cellar
+- **Description:** Warm, woodsmoke. A woman wipes the counter. Too friendly for this hour.
+- **Character:** Hilde (named on 2nd+ visit)
+- **Items:** mirror (wall), cellar_key (behind counter — given at `trusted`)
+- **Connections:** E → Village Square, D → Inn Cellar (requires `trust(hilde, trusted/devoted)` or cellar_key)
+- **Special:** Inn door locked from outside if `trust(hilde, feared)`. Repair with `knock.` at village_square.
 
 ### Inn Cellar
-- **Description:** Mold, old wine barrels. And a fresh mattress. Someone slept here recently — or was hidden.
-- **Items:** Hilde's diary (hidden behind barrel — only findable at `trust(hilde, trusted)`)
-- **Connections:** stairs → Inn
-- **Details:** Diary reveals: Hilde knew about Jakob. She stayed silent out of fear, not loyalty.
+- **Description:** Stone steps, wine barrels, a mattress. Someone lived here recently.
+- **Items:** Hilde's diary (hidden behind barrel)
+- **Connections:** U → Inn
+- **Details (3rd look):** Initials on the blanket — not Hilde's.
 
-### Church / Graveyard
-- **Description:** Old church, graveyard in front. Mia sits on a gravestone.
-- **Character:** Mia
-- **Items:** Gravestone inscription (readable with flashlight — gives crypt code)
-- **Connections:** S → Village Square, door → Church Interior
+### Graveyard
+- **Description:** Overgrown churchyard. A small girl sits on a grave, watching.
+- **Character:** Mia (named on 2nd+ visit)
+- **Items:** crypt_code inscription (requires flashlight to read)
+- **Connections:** S → Village Square, N → Church Interior
+- **Details (3rd look):** Newest grave has fresh flowers — placed today. Stone reads: *Mia Haas, 2004–2014.* Ten years ago.
 
 ### Church Interior
-- **Description:** Candles burning though no one lit them. Father Benedikt kneels before the altar.
-- **Character:** Father Benedikt
-- **Items:** Old church record (gives background on the procession, incomplete)
-- **Connections:** door → Church/Graveyard, steps → Crypt (only with crypt code)
+- **Description:** Cold stone, candles burning without explanation. A man in dark robes kneels at the altar.
+- **Character:** Father Benedikt (named on 2nd+ visit)
+- **Items:** church record
+- **Connections:** S → Graveyard, D → Crypt (requires crypt_code)
+- **Room action:** If holding rope and bell not yet rung: *"The rope is in your hands. The bell frame waits above."*
 
 ### Crypt
-- **Description:** Below the church. Cold. Stone slabs with names. One slab has been moved recently.
-- **Items:** Letter (addressed to "L.V." — Leon's initials. Written three months ago.)
-- **Connections:** steps → Church Interior
-- **Details:** Letter reveals: the interview was fake. Someone wanted Leon here. Sender unknown — but the handwriting appears again later.
+- **Description:** Below the church. Stone slabs. One has been moved recently.
+- **Items:** letter (addressed to "L.V.")
+- **Connections:** U → Church Interior
+- **Details (3rd look):** Scratch marks on the underside of the moved slab — made from the inside.
 
 ### Mayor's House
-- **Description:** Solid, locked. Light in the upper floor.
-- **Character:** Mayor Otto (only reachable if `trust(benedikt, trusted)` or with key)
-- **Items:** Mayor's diary (requires crypt key to enter)
+- **Description:** Neat entrance hall. A man stands at the top of the stairs.
+- **Character:** Mayor Otto (named on 2nd+ visit)
+- **Items:** Otto's diary
 - **Connections:** W → Village Square
+- **Unlock:** `trust(benedikt, trusted/devoted)` or mayors_key
 
 ### Barn
-- **Description:** Door ajar. Jakob stands inside, waiting. Looks nervous.
-- **Character:** Jakob
-- **Items:** car key (Jakob's car — working vehicle, but road is blocked)
+- **Description:** Door ajar. A young man stands inside, arms crossed, pretending he was not waiting.
+- **Character:** Jakob (named on 2nd+ visit)
+- **Items:** car_key
 - **Connections:** NE → Village Square
+- **Room actions:**
+  - If tire tracks clue + Hilde's diary clue found: *"The tracks. The diary. The pieces fit together now."* → implies `confront_jakob.`
+  - If `trust(jakob, trusted/devoted)` or holding car_key: *"His eyes keep drifting to the door."* → implies `follow_jakob.`
 
 ### Forest
-- **Description:** Dense. No moonlight except at one spot — something reflects there.
+- **Description:** Dense trees. The mirror led you to a gap in the undergrowth.
 - **Items:** —
-- **Connections:** Village Square (entrance only visible at night with mirror), forest trail → escape route
-- **Unlock:** `holding(mirror)` + path locked after midnight
+- **Connections:** SE → Village Square
+- **Unlock:** `holding(mirror)`
+- **Room action:** Always: *"The trail leads out. You could leave it all behind."* → implies `escape.`
 
 ---
 
@@ -135,64 +147,75 @@
 
 ### Erna
 - **Location:** Village Entrance
-- **Appears to be:** Old woman, warns the player
-- **Truth:** The ringleader. The warning was not a warning — it was an invitation phrased as a warning, to make sure Leon entered the village.
+- **First encounter:** "An old woman at the road's edge" (anonymous)
+- **Named:** From 2nd visit onward
+- **Appears to be:** Warns the player
+- **Truth:** The ringleader. The warning was an invitation phrased as a warning.
 - **Trust effects:**
-  - `neutral` → cryptic remarks, nothing concrete
-  - `trusted` → gives false tip: go to the priest
-  - `doubted` → silent, but her expression betrays unease
-  - `feared` → hides, no longer approachable
-- **Twist reveal:** Handwriting in the letter from the crypt is Erna's.
+  - `neutral` → cryptic, nothing concrete
+  - `trusted` → hints toward the priest
+  - `doubted` → silent, unease visible
+  - `feared` → gone, no longer reachable
+- **Twist:** Handwriting in the crypt letter is Erna's.
 
 ### Hilde
 - **Location:** Inn
-- **Appears to be:** Friendly innkeeper, helpful
-- **Truth:** Herself a prisoner of the system. Knows about Jakob's plan. Stayed silent out of fear.
+- **First encounter:** "A woman behind the counter" (anonymous)
+- **Named:** From 2nd visit onward
+- **Appears to be:** Friendly innkeeper
+- **Truth:** Knows about Jakob's plan. Stayed silent out of fear.
 - **Trust effects:**
   - `neutral` → small talk, no substance
-  - `trusted` → confesses fear, hints at the cellar
-  - `devoted` → gives mirror without condition, warns about Erna
-  - `doubted` → refuses mirror, cellar stays locked
-- **Reversibility:** If player finds Hilde's diary without trusting her → trust jumps immediately to `trusted`
+  - `trusted` → gives cellar_key, hints at what is downstairs
+  - `devoted` → gives mirror willingly; needed for Ending B
+  - `doubted` → cellar stays locked, distant
+  - `feared` → inn door locked; `knock.` at village_square resets to `neutral`
+- **Mirror rule:** Mirror can only be taken at `devoted`. Any lower trust → Hilde throws Leon out (`feared`), inn locked.
+- **Reversibility:** Finding Hilde's diary while `doubted` → auto-jumps to `trusted`
 
 ### Jakob
 - **Location:** Barn
-- **Appears to be:** The only ally, wants to get Leon out
-- **Truth:** He ran Leon's car off the road. Works for Erna. Regrets it — but does not act against it.
+- **First encounter:** "A young man near the back" (anonymous)
+- **Named:** From 2nd visit onward
+- **Appears to be:** The only way out
+- **Truth:** He ran Leon's car off the road. Works for Erna. Regrets it.
 - **Trust effects:**
-  - `neutral` → offers help, says a car is ready
-  - `trusted` → gives car key, leads to the forest edge (trap)
-  - `devoted` → Leon follows Jakob blindly → worst ending possible
-  - `doubted` → Jakob gets defensive, still gives key under pressure
-  - `feared` → Jakob flees, car key stays in barn
-- **Reversibility:** Tire tracks at crash site + Hilde's diary together → trust drops to `feared`, key still findable
+  - `neutral` → offers help, mentions a car
+  - `trusted` → gives car_key, leads to village edge (road blocked)
+  - `devoted` → leads Leon into the dark → Ending C
+  - `doubted` → defensive, implies guilt
+  - `feared` → backs against the wall, won't move
+- **Confrontation:** `confront_jakob.` unlocks only if tire tracks clue AND Hilde's diary clue are both in notes → trust → `feared`
 
 ### Father Benedikt
 - **Location:** Church Interior
-- **Appears to be:** Sinister, evasive
-- **Truth:** Wants to break the curse, but believes the only way is through the procession. Not a villain — a tragic figure.
+- **First encounter:** "A man in dark robes" (anonymous)
+- **Named:** From 2nd visit onward
+- **Appears to be:** Evasive, sinister
+- **Truth:** Wants to end the cycle but believes the procession is the only way. Tragic, not evil.
 - **Trust effects:**
   - `neutral` → praying, almost ignores Leon
-  - `trusted` → explains the procession (his version), opens crypt access
-  - `devoted` → gives key to Mayor's House
-  - `doubted` → crypt stays locked without code
-- **Note:** Benedikt's version of the truth is incomplete but sincerely meant.
+  - `trusted` → explains procession, gives crypt access code
+  - `devoted` → gives mayors_key
+  - `doubted` → crypt unreachable without the code
 
 ### Mia
-- **Location:** Church / Graveyard
-- **Appears to be:** A child, hiding, knows strange things
-- **Truth:** Dead for ten years. Player never learns this directly — only hints. Her gravestone is readable.
-- **Trust effects:** no trust system — Mia behaves the same always, always gives accurate information
-- **Special:** The only character who never lies. But the player has no reason to trust her early on.
-- **Twist reveal:** Gravestone code → Mia's birth and death date visible → death date: ten years ago. Player does the math.
+- **Location:** Graveyard
+- **First encounter:** "A small girl on the grave" (anonymous)
+- **Named:** From 2nd visit onward
+- **Truth:** Dead for ten years. Never stated directly — only hinted.
+- **Trust effects:** No trust system. Always gives accurate information. The only character who never lies.
+- **Twist:** Gravestone in graveyard reads: *Mia Haas, 2004–2014.*
 
 ### Mayor Otto
 - **Location:** Mayor's House
-- **Appears to be:** Authoritative figure, leader
-- **Truth:** Does not know everything himself. Executes what Erna has told him for years. Weak, not evil.
+- **First encounter:** "A man at the top of the stairs" (anonymous)
+- **Named:** From 2nd visit onward
+- **Appears to be:** Authority figure
+- **Truth:** Follows Erna's orders. Weak, not evil.
 - **Trust effects:**
-  - `neutral` → says "go to sleep"
-  - `trusted` → shows diary, breaks down internally
+  - `neutral` → official, dismissive
+  - `trusted` → shows diary, breaks down
   - `doubted` → throws Leon out
 
 ---
@@ -205,16 +228,21 @@ feared → doubted → neutral → trusted → devoted
   -2        -1        0        +1        +2
 ```
 
-### Changes
-- Rises through: correct dialogue options, showing matching items, visiting rooms in the right order
-- Falls through: exposing lies (via items/diaries), trusting the wrong characters, certain actions
-- **Reversible:** Evidence items (diaries, letters, notes) can shift trust sharply regardless of prior decisions
+### Commands
+- `trust.` — trusts the character in the current room (neutral → trusted)
+- `doubt.` — doubts the character in the current room (neutral → doubted)
+- `reassure(X).` — deepens existing trust (trusted → devoted); only works at the right moment
+- `confide(X).` — shares evidence with a character to raise trust
+- `confront_jakob.` — confronts Jakob with combined evidence (tire tracks + diary)
+- `confront_erna.` — confronts Erna with full proof (letter + Otto's diary + bell rung + Hilde devoted)
 
-### Dialogue Options
-Decisions in dialogue change trust. Examples:
-- `trust_her.` / `doubt_her.` / `stay_silent.`
-- `confront(jakob).` — only available if tire tracks AND diary found
-- `reassure(hilde).` — raises trust if player has not entered cellar yet
+### Changes
+- Rises through: `trust.`, `reassure(X).`, `confide(X).`, finding matching evidence
+- Falls through: `doubt.`, taking the mirror without `devoted`, confronting with evidence
+- **Reversible:** Evidence items (diaries, letters) can shift trust sharply regardless of prior decisions
+
+### Discovery
+Commands for trust decisions are not shown in the help menu. After `talk.`, if a character's trust is `neutral`, the prompt asks: *"Do you trust her/him? (trust. / doubt.)"*
 
 ---
 
@@ -222,16 +250,18 @@ Decisions in dialogue change trust. Examples:
 
 | ID | Name | Location | Use |
 |---|---|---|---|
-| `flashlight` | Flashlight | Crash Site (glove compartment) | Read gravestone, lit dark rooms |
-| `rope` | Rope | Crash Site (trunk) | Repair church bell |
-| `mirror` | Mirror | Inn (wall) | Make forest path visible at night |
-| `crypt_code` | Crypt Code | Gravestone (with flashlight) | Open crypt |
-| `hildes_diary` | Hilde's Diary | Inn Cellar | Expose Jakob → trust(jakob) drops |
-| `letter` | Letter to L.V. | Crypt | Reveals: interview was a trap |
-| `ottos_diary` | Otto's Diary | Mayor's House | Confirm Erna's role |
+| `flashlight` | Flashlight | Crash Site | Read gravestone inscription, see in dark rooms |
+| `rope` | Rope | Crash Site | Ring the church bell |
+| `mirror` | Mirror | Inn wall | Make forest path visible; requires `trust(hilde, devoted)` to take |
+| `crypt_code` | Crypt Code | Graveyard (flashlight needed) | Open crypt door |
+| `hildes_diary` | Hilde's Diary | Inn Cellar | Expose Jakob; auto-upgrades Hilde trust if doubted |
+| `letter` | Letter to L.V. | Crypt | Reveals fabricated interview; needed for Ending B |
+| `ottos_diary` | Otto's Diary | Mayor's House | Confirms Erna's plan; needed for Ending B |
 | `church_record` | Old Church Record | Church Interior | Procession background (incomplete) |
-| `car_key` | Car Key | Barn | Start Jakob's car |
-| `well_note` | Note at the Well | Village Square | First warning (anonymous) |
+| `car_key` | Car Key | Barn | Start Jakob's car (road blocked anyway) |
+| `well_note` | Note at the Well | Village Square | First warning (anonymous, no signature) |
+| `cellar_key` | Cellar Key | Given by Hilde | Opens inn cellar door |
+| `mayors_key` | Mayor's Key | Given by Benedikt | Opens Mayor's House |
 
 ---
 
@@ -239,11 +269,14 @@ Decisions in dialogue change trust. Examples:
 
 | ID | Description | Requires | Unlocks |
 |---|---|---|---|
-| `rope_trunk` | Trunk is stuck — get the rope | flashlight (see the latch) | rope in inventory |
-| `church_bell` | Church bell does not ring | rope | Procession delayed — more time |
-| `crypt_lock` | Crypt door is locked | gravestone code (flashlight) | Enter crypt |
-| `forest_trail` | Forest entrance invisible at night | mirror | Escape route through forest |
-| `confrontation` | Confront Jakob | Tire tracks noticed + Hilde's diary | New dialogue options, trust flips |
+| `church_bell` | Bell rope frame needs a rope to reach | `holding(rope)` in church interior | `ring_bell.` → deadline +25 min |
+| `crypt_lock` | Crypt door sealed with symbol sequence | crypt_code in inventory | Enter crypt |
+| `forest_trail` | Forest entrance hidden in darkness | `holding(mirror)` | `escape.` route through forest |
+| `inn_cellar` | Cellar door bolted | `trust(hilde, trusted/devoted)` or cellar_key | Access inn cellar |
+| `mayors_house` | Front door locked | `trust(benedikt, trusted/devoted)` or mayors_key | Access Mayor's House |
+| `mirror_access` | Mirror requires real trust | `trust(hilde, devoted)` | `take(mirror)` — else kicked out |
+| `hilde_repair` | Inn locked after taking mirror without trust | `knock.` at village_square | Inn door reopens, trust → neutral |
+| `confrontation` | Confront Jakob with combined evidence | tire tracks clue + hildes_diary clue | `confront_jakob.` → trust(jakob) → feared |
 
 ---
 
@@ -251,78 +284,116 @@ Decisions in dialogue change trust. Examples:
 
 | Action | Requirement | Consequence |
 |---|---|---|
-| `trust_her.` | village_entrance | trust(erna)+1 |
-| `doubt_her.` | village_entrance | trust(erna)-1 |
-| `confront(jakob).` | tire tracks + hildes_diary | trust(jakob) → feared, key stays in barn |
-| `take(mirror).` | Inn | trust(hilde)-1 if taken without permission |
-| `ask(hilde, cellar).` | trust(hilde, trusted) | cellar door opens |
-| `ring_bell.` | rope in hand + church interior | +10 minutes game time |
-| `read(gravestone).` | flashlight + graveyard | crypt code + Mia's death date visible |
+| `trust.` | At room with character, trust = neutral | trust(char) → trusted |
+| `doubt.` | At room with character, trust = neutral | trust(char) → doubted |
+| `reassure(hilde).` | inn, trust(hilde, trusted) | trust(hilde) → devoted |
+| `reassure(jakob).` | barn, trust(jakob, trusted) | trust(jakob) → devoted |
+| `confide(benedikt).` | church_interior, trusted | trust(benedikt) → devoted |
+| `confront_jakob.` | tire tracks + hildes_diary clues | trust(jakob) → feared |
+| `take(mirror).` | inn, trust(hilde, devoted) | mirror in inventory |
+| `take(mirror).` | inn, trust NOT devoted | kicked to village_square, trust(hilde) → feared, inn locked |
+| `knock.` | village_square, trust(hilde, feared) | inn unlocked, trust(hilde) → neutral |
+| `ring_bell.` | church_interior, holding(rope) | deadline +25 min, bell_rung asserted |
+| `confront_erna.` | village_entrance + letter clue + ottos_diary clue + bell_rung + trust(hilde, devoted) | Ending B |
+| `follow_jakob.` | barn, trust(jakob, devoted) | Ending C |
+| `escape.` | forest | Ending A |
 
 ---
 
-## Exit Display (idea, not implemented)
+## Progressive Reveal System
 
-Show available exits at the end of every `look.` output. Each exit shows the direction and destination name — with a visual marker for whether that room has been visited yet.
+### Character Names
+- **1st visit:** Character described anonymously in room description ("an old woman", "a woman behind the counter", "a young man", "a man in dark robes", "a small girl", "a man at the top of the stairs")
+- **2nd+ visit:** `[Name] is here.` shown at end of room output
 
-Example output:
+### Item Visibility
+- **1st look:** Room description only — no items shown
+- **2nd+ look:** Items in room listed (`You see: X.`)
+- **3rd+ look:** Room detail text shown + automatically saved to notes
+
+### Contextual Action Hints
+Special actions (`confront_jakob.`, `confront_erna.`, `ring_bell.`, `follow_jakob.`, `escape.`) are never listed in the help menu. Instead:
+- When conditions are **not** met: nothing shown
+- When conditions are **met**: a narrative line in the room description implies the action
+- Player must infer the command from context
+
+### Start Screen
+No command list shown. Only: `(Type help. for a list of commands.)`
+
+---
+
+## Exit Display
+
+Shown at the end of every `look.` output:
+
 ```
-Exits: [n] Graveyard  [w] Inn *  [e] Mayor's House ?  [sw] Barn *
+You can go: n  s (crash_site)  w (inn)  sw
 ```
-- `*` = already visited
-- `?` = never been there
 
-**Two implementation options:**
-1. **Inline in `look`** — append exits automatically after every room description. Simple, always visible.
-2. **Separate `exits.` command** — player calls it explicitly when they want to orient themselves. Less intrusive, rewards active exploration.
+- Direction shown always
+- Room name shown in parentheses only if that room has been visited before
+- Unvisited destinations: direction only, no name
 
-Option 1 fits better — keeps all spatial info in one place and avoids making the player remember a command.
-
-Uses `looked_at/2` (already tracked) to determine visited vs. unvisited. Conditional paths (locked doors) could show as `[d] Cellar — locked` instead of hiding completely.
+Implemented via `raw_exit/3` facts (separate from conditional `path/3`) to avoid triggering locked-door side effects during display.
 
 ---
 
 ## Clue System
 
-- `look.` first time → room description only
-- `look.` second time → description + hidden detail
-- Detail automatically saved to `clue/1` (no duplicates)
+- `look.` 1st time → room description only
+- `look.` 2nd time → description + items visible
+- `look.` 3rd time → description + items + hidden detail, detail saved to notes
 - `notes.` → lists all collected clues
-- Details are deliberately ambiguous — clear enough to notice, not clear enough to understand immediately
+- Details are deliberately ambiguous — clear enough to notice, not immediately interpretable
 
-### Detail Text per Room
+### Detail Text per Room (3rd look)
 
-| Room | Detail (from 2nd look) |
+| Room | Detail |
 |---|---|
-| `crash_site` | Two sets of tire tracks — someone pushed you |
-| `forest_path` | Fresh footprints heading toward the village, very recent |
+| `crash_site` | Two sets of tire tracks — someone drove very close before the ditch |
+| `forest_path` | Fresh footprints toward the village, edges sharp — minutes ago |
 | `village_entrance` | Erna used your name — you never introduced yourself |
-| *(further rooms to follow)* | |
+| `village_square` | Note at well has a date — three months ago, matching the crypt letter |
+| `inn` | Mirror angled toward door, not room — perfect view of every entrance from behind the bar |
+| `inn_cellar` | Blanket initials — not Hilde's |
+| `graveyard` | Newest grave has today's flowers — stone reads: Mia Haas, 2004–2014 |
+| `church_interior` | Candles mark every third pew on the left — seven. Same as newer graves outside |
+| `crypt` | Scratch marks on moved slab underside — made from the inside |
+| `mayors_house` | Group photo from 1987, one face circled in red: Erna |
+| `barn` | Oil stain outline of a car — still fresh at edges, moved recently |
+| `forest` | Scrap of fabric on a branch — same pattern as the inn cellar blanket |
 
 ---
 
 ## Time Pressure
 
-Midnight is the limit. Mechanic: actions consume time (implicit). Ringing the bell buys more time. After midnight: forest path locked, certain characters no longer approachable.
+Game starts at 22:00. Deadline: midnight (120 minutes). Every movement costs 5 minutes. `ring_bell.` adds 25 minutes to the deadline. Clock displayed as `HH:MM` after every `look.`
+
+After midnight → Ending C triggers (procession begins).
 
 ---
 
 ## Endings
 
-### Ending A — Escape (alone)
-**Condition:** mirror + forest trail + without Jakob
-**Tone:** You are outside. You do not know what happens behind you. Your phone has signal again. First message: the Innsbruck interview has been "regretfully cancelled."
-**Open:** Who sent the interview request? What happens in Kalmbach without you?
+### Ending A — Out (alone)
+**Trigger:** `escape.` while in forest (requires mirror → trust(hilde, devoted) → forest path)
+**Tone:** The trail spits you out onto a logging road. Kalmbach disappears in fog. Phone buzzes — one bar. Message: *"We regret the Innsbruck feature has been cancelled."* You never applied.
+**Open:** Who sent for you? What happens in Kalmbach without a witness?
 
-### Ending B — Liberation
-**Condition:** Ring bell + confront Erna (ottos_diary + letter) + take Hilde with you
-**Tone:** The curse — whatever it was — breaks. Hilde comes with you. The village is silent. Benedikt stays.
-**Open:** Mia appears one last time and waves. Was she ever real?
+### Ending B — The Bell
+**Trigger:** `confront_erna.` at village_entrance, requires:
+- clue: letter (interview was fabricated)
+- clue: Otto's diary (Erna wrote it three months ago)
+- `bell_rung` (procession delayed)
+- `trust(hilde, devoted)` (Hilde willing to leave)
 
-### Ending C — Sacrificed
-**Condition:** Midnight reached, or trusted Jakob blindly (devoted)
-**Tone:** The procession begins. You understand everything now. Too late.
-**Open:** Who comes to Kalmbach next?
+**Tone:** You hold the letter up to Erna. For the first time she looks her age. The plan needed Leon to stay of his own will — he is leaving, and not alone. Hilde takes your arm. Shutters open one by one. Benedikt stays behind. At the village edge, Mia waves once. Then she is not there.
+**Open:** Was Mia ever real?
+
+### Ending C — The Procession
+**Trigger:** Midnight reached without escaping, OR `follow_jakob.` while `trust(jakob, devoted)`
+**Tone:** Midnight. Shutters open all at once. They come with candles — every face you have met, and many you have not. You understand all of it now. Too late.
+**Open:** Who comes to Kalmbach next full moon?
 
 ---
 
@@ -339,22 +410,31 @@ Midnight is the limit. Mechanic: actions consume time (implicit). Ringing the be
 
 | Feature | Status |
 |---|---|
-| Movement n/s/e/w | ✅ implemented |
-| look / describe (English) | ✅ implemented |
-| Details on second look | ✅ implemented (`looked_at/2` counts visits per room) |
+| Movement n/s/e/w/ne/sw/nw/se/u/d | ✅ implemented |
+| All 12 rooms with describe + details | ✅ implemented |
+| Progressive item reveal (2nd look) | ✅ implemented |
+| Progressive detail reveal (3rd look) | ✅ implemented (`looked_at/2` counts per room) |
 | Clue system (`notes.`) | ✅ implemented (`clue/1` dynamic, no duplicates) |
-| Item display (`notice_items`) | ✅ implemented |
+| Character anonymous 1st visit, named 2nd+ | ✅ implemented (`show_character_name/2`) |
+| Contextual action hints (no explicit commands) | ✅ implemented (`show_room_actions/0` per room) |
+| Exit display with visited room names | ✅ implemented (`raw_exit/3` + `show_exits/0`) |
+| Time display HH:MM | ✅ implemented |
+| Start: hint only, no command list | ✅ implemented |
+| Help menu (core commands only) | ✅ special actions removed |
 | take / drop / inventory | ✅ implemented |
-| Starting room `crash_site` | ✅ implemented |
-| All 12 rooms implemented | ✅ crash_site, forest_path, village_entrance, village_square, inn, inn_cellar, graveyard, church_interior, crypt, mayors_house, barn, forest |
-| All 6 characters implemented | ✅ Erna, Hilde, Jakob, Benedikt, Mia, Otto — all with trust-based dialogue |
-| All 10 items placed | ✅ flashlight, rope, well_note, mirror, cellar_key, hildes_diary, church_record, crypt_code, letter, car_key, ottos_diary, mayors_key |
-| Conditional paths | ✅ inn→cellar (trust/key), crypt (crypt_code), mayors_house (benedikt trust/key), forest (mirror) |
-| read_item(X) mechanic | ✅ all documents have full readable content |
-| confront_jakob | ✅ unlocks only if tire tracks + diary clue found |
-| Trust decisions all characters | ✅ trust_her, doubt_her, trust_hilde, doubt_hilde, trust_jakob, doubt_jakob, trust_benedikt, doubt_benedikt, trust_otto, doubt_otto |
-| Trust system (5 levels) | ✅ implemented (`trust_value/2` ladder, `raise_trust`/`lower_trust`, `reassure`/`confide` reach `devoted`) |
-| Time pressure / midnight | ✅ implemented (`game_time/1` + `deadline/1`, every move costs 5 min, `time.` shows clock) |
-| Endings | ✅ implemented (A `escape.`, B `confront_erna.`, C midnight or `follow_jakob.` while devoted) |
-| Ring bell puzzle | ✅ implemented (`ring_bell.` needs rope, pushes deadline +25 min) |
-| Replay | ✅ implemented (`reset_state` — `start.` fully resets a finished game) |
+| read_item(X) for all documents | ✅ implemented |
+| Unified trust/doubt commands | ✅ `trust.` / `doubt.` check current room character |
+| Trust system (5 levels, all characters) | ✅ feared/doubted/neutral/trusted/devoted |
+| reassure(X) / confide(X) → devoted | ✅ implemented |
+| Mirror: devoted only, kick-out mechanic | ✅ implemented |
+| Inn locked when trust(hilde, feared) | ✅ implemented |
+| knock. repair mechanic | ✅ implemented |
+| confront_jakob (evidence-gated) | ✅ implemented |
+| confront_erna (full conditions) | ✅ implemented |
+| follow_jakob (trust-dependent outcomes) | ✅ implemented |
+| ring_bell puzzle (rope + deadline +25) | ✅ implemented |
+| Conditional paths (cellar/crypt/mayor/forest) | ✅ implemented |
+| All 6 characters with trust-based dialogue | ✅ Erna, Hilde, Jakob, Benedikt, Mia, Otto |
+| All 12 items placed and readable | ✅ implemented |
+| 3 endings (A/B/C) | ✅ implemented |
+| Replay (`start.` resets everything) | ✅ implemented |
