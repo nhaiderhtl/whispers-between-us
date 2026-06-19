@@ -388,6 +388,7 @@ doubt_msg(benedikt) :-
 doubt_msg(otto) :-
     write('He runs this village. Whatever happened here, he is not innocent.'), nl.
 
+trust :- game_over, !, game_over_notice.
 trust :-
     current_char(Char), trust(Char, neutral), !,
     retract(trust(Char, _)), assert(trust(Char, trusted)),
@@ -398,6 +399,7 @@ trust :-
 trust :-
     write('There is no one here to trust or doubt.'), nl.
 
+doubt :- game_over, !, game_over_notice.
 doubt :-
     current_char(Char), trust(Char, neutral), !,
     retract(trust(Char, _)), assert(trust(Char, doubted)),
@@ -408,6 +410,7 @@ doubt :-
 doubt :-
     write('There is no one here to trust or doubt.'), nl.
 
+confront_jakob :- game_over, !, game_over_notice.
 confront_jakob :-
     i_am_at(barn),
     clue('Crash site: Two sets of tire tracks on the road. Someone drove very close to you just before the ditch.'),
@@ -445,6 +448,7 @@ lower_trust(Char) :-
 
 /* Reaching devoted — deepening an existing trust. */
 
+reassure(_) :- game_over, !, game_over_notice.
 reassure(hilde) :-
     i_am_at(inn), trust(hilde, trusted),
     raise_trust(hilde),
@@ -471,6 +475,7 @@ reassure(jakob) :-
 reassure(_) :-
     write('There is no one here to reassure.'), nl.
 
+confide(_) :- game_over, !, game_over_notice.
 confide(benedikt) :-
     i_am_at(church_interior), trust(benedikt, trusted),
     clue('Church record: A stranger must witness and choose freely. If kept against their will, something breaks. The record is incomplete.'),
@@ -503,8 +508,10 @@ print_time :-
     ;  format('The church clock reads ~d:~d.~n',  [H, M])
     ).
 
+time :- game_over, !, game_over_notice.
 time :- print_time.
 
+ring_bell :- game_over, !, game_over_notice.
 ring_bell :-
     i_am_at(church_interior), bell_rung,
     write('The bell still echoes. It will not buy you more time twice.'), nl, !.
@@ -526,6 +533,7 @@ ring_bell :-
 /* ===================== Take / Drop / Inventory ===================== */
 
 take(X) :- var(X), !, write('Take what?'), nl.
+take(_) :- game_over, !, game_over_notice.
 
 take(rope) :-
     at(rope, crash_site), \+ holding(flashlight),
@@ -579,6 +587,7 @@ take(_) :-
     write('You do not see that here.'), nl.
 
 
+drop(_) :- game_over, !, game_over_notice.
 drop(X) :-
     holding(X), i_am_at(Place),
     retract(holding(X)), assert(at(X, Place)),
@@ -586,6 +595,7 @@ drop(X) :-
 drop(_) :-
     write('You are not carrying that.'), nl.
 
+knock :- game_over, !, game_over_notice.
 knock :-
     i_am_at(village_square), trust(hilde, feared), !,
     retract(trust(hilde, _)), assert(trust(hilde, neutral)),
@@ -596,6 +606,7 @@ knock :-
 knock :-
     write('There is nothing to knock on here.'), nl.
 
+inventory :- game_over, !, game_over_notice.
 inventory :-
     write('=== Inventory ==='), nl,
     list_items.
@@ -609,6 +620,7 @@ list_items.
 
 /* ===================== Read ===================== */
 
+read_item(_) :- game_over, !, game_over_notice.
 read_item(well_note) :-
     holding(well_note),
     write('"Trust no one who helps you too quickly."'), nl,
@@ -679,6 +691,7 @@ notice_items(_).
 record_clue(Text) :- clue(Text), !.
 record_clue(Text) :- assert(clue(Text)).
 
+notes :- game_over, !, game_over_notice.
 notes :-
     write('=== Notes ==='), nl, list_clues.
 
@@ -691,6 +704,7 @@ list_clues.
 
 /* ===================== Look ===================== */
 
+look :- game_over, !, game_over_notice.
 look :-
     i_am_at(Place),
     describe(Place), nl,
