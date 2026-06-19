@@ -448,6 +448,13 @@ lower_trust(Char) :-
 
 /* Reaching devoted — deepening an existing trust. */
 
+reassure :- game_over, !, game_over_notice.
+reassure :-
+    current_char(Char), !,
+    reassure(Char).
+reassure :-
+    write('There is no one here to reassure.'), nl.
+
 reassure(_) :- game_over, !, game_over_notice.
 reassure(hilde) :-
     i_am_at(inn), trust(hilde, trusted),
@@ -472,8 +479,18 @@ reassure(jakob) :-
 reassure(jakob) :-
     i_am_at(barn),
     write('He has not earned that kind of faith from you.'), nl, !.
+reassure(Char) :-
+    character_at(Char, _), \+ current_char(Char), !,
+    write('That person is not here.'), nl.
 reassure(_) :-
     write('There is no one here to reassure.'), nl.
+
+confide :- game_over, !, game_over_notice.
+confide :-
+    current_char(Char), !,
+    confide(Char).
+confide :-
+    write('There is no one here to confide in.'), nl.
 
 confide(_) :- game_over, !, game_over_notice.
 confide(benedikt) :-
@@ -488,6 +505,9 @@ confide(benedikt) :-
 confide(benedikt) :-
     i_am_at(church_interior),
     write('He does not yet trust you enough to hear it.'), nl, !.
+confide(Char) :-
+    character_at(Char, _), \+ current_char(Char), !,
+    write('That person is not here.'), nl.
 confide(_) :-
     write('There is no one here to confide in.'), nl.
 
@@ -532,7 +552,8 @@ ring_bell :-
 
 /* ===================== Take / Drop / Inventory ===================== */
 
-take(X) :- var(X), !, write('Take what?'), nl.
+take :- write('Specify an item. Example: take(flashlight).'), nl.
+take(X) :- var(X), !, write('Specify an item. Example: take(flashlight).'), nl.
 take(_) :- game_over, !, game_over_notice.
 
 take(rope) :-
@@ -587,6 +608,7 @@ take(_) :-
     write('You do not see that here.'), nl.
 
 
+drop :- write('Specify an item. Example: drop(rope).'), nl.
 drop(_) :- game_over, !, game_over_notice.
 drop(X) :-
     holding(X), i_am_at(Place),
@@ -620,6 +642,7 @@ list_items.
 
 /* ===================== Read ===================== */
 
+read_item :- write('Specify an item. Example: read_item(letter).'), nl.
 read_item(_) :- game_over, !, game_over_notice.
 read_item(well_note) :-
     holding(well_note),
@@ -773,7 +796,7 @@ show_jakob_confront_action :-
     clue('Crash site: Two sets of tire tracks on the road. Someone drove very close to you just before the ditch.'),
     clue('Hilde\'s diary: Jakob threatened Hilde into silence. She knows he ran you off the road.'), !,
     write('The tracks. The diary. The pieces fit together now.'), nl,
-    (hinted(confront_jakob) -> write('(confront_jakob.)'), nl ; assert(hinted(confront_jakob))).
+    (hinted(confront_jakob) -> write('(confront.)'), nl ; assert(hinted(confront_jakob))).
 show_jakob_confront_action.
 
 show_jakob_follow_action :-
@@ -781,7 +804,7 @@ show_jakob_follow_action :-
 show_jakob_follow_action :-
     (trust(jakob, trusted) ; trust(jakob, devoted) ; holding(car_key)), !,
     write('His eyes keep drifting to the door.'), nl,
-    (hinted(follow_jakob) -> write('(follow_jakob.)'), nl ; assert(hinted(follow_jakob))).
+    (hinted(follow_jakob) -> write('(follow.)'), nl ; assert(hinted(follow_jakob))).
 show_jakob_follow_action.
 
 show_erna_action :-
@@ -792,7 +815,7 @@ show_erna_action :-
     bell_rung,
     trust(hilde, devoted), !,
     write('You have it all. The letter. The truth behind it. The bell bought you time. And Hilde is ready.'), nl,
-    (hinted(confront_erna) -> write('(confront_erna.)'), nl ; assert(hinted(confront_erna))).
+    (hinted(confront_erna) -> write('(confront.)'), nl ; assert(hinted(confront_erna))).
 show_erna_action.
 
 /* ===================== Movement ===================== */
@@ -853,14 +876,26 @@ ending_c :-
     end_banner,
     write('              ENDING C — THE PROCESSION'), nl,
     end_banner, nl,
-    write('Midnight. The shutters open all at once.'), nl,
-    write('They come out with candles, every face you have met'), nl,
-    write('and many you have not. Erna at the front. Hilde will not'), nl,
-    write('meet your eyes.'), nl, nl,
-    write('You understand all of it now — the letter, the choosing,'), nl,
-    write('the contract. You understand it completely.'), nl,
-    write('Too late to matter.'), nl, nl,
-    write('Who comes to Kalmbach next full moon?'), nl,
+    write('Midnight.'), nl, nl,
+    write('The shutters open all at once — every window in the village,'), nl,
+    write('in the same second, without a sound.'), nl, nl,
+    write('They come out with candles. Every face you have met.'), nl,
+    write('And many you have not.'), nl,
+    write('Erna walks at the front. She does not look triumphant.'), nl,
+    write('She looks relieved.'), nl, nl,
+    write('Hilde is there too. She will not meet your eyes.'), nl,
+    write('She tried to warn you. You did not listen — or you did,'), nl,
+    write('but not soon enough.'), nl, nl,
+    write('You understand everything now.'), nl,
+    write('The letter. The choosing. The contract. Why you were brought here.'), nl,
+    write('Why no one could simply tell you.'), nl, nl,
+    write('The understanding does not help you.'), nl, nl,
+    write('The candles form a circle. The bell you never rang'), nl,
+    write('— or rang too late — no longer matters.'), nl,
+    write('The village has its witness. The contract is fulfilled.'), nl, nl,
+    write('You will not leave Kalmbach.'), nl, nl,
+    write('Somewhere beyond the fog, someone else reads an interview request'), nl,
+    write('they did not apply for.'), nl,
     write('(start. to play again)'), nl, !.
 
 game_over_notice :-
@@ -915,6 +950,15 @@ confront_erna :-
 confront_erna :-
     write('Erna is not here.'), nl.
 
+confront :- game_over, !, game_over_notice.
+confront :- i_am_at(barn),             !, confront_jakob.
+confront :- i_am_at(village_entrance), !, confront_erna.
+confront :- write('There is no one here to confront.'), nl.
+
+follow :- game_over, !, game_over_notice.
+follow :- i_am_at(barn), !, follow_jakob.
+follow :- write('There is no one here to follow.'), nl.
+
 /* ===================== Engine ===================== */
 
 help  :- instructions.
@@ -932,8 +976,8 @@ instructions :-
     write('  inventory.      -> show carried items'), nl,
     write('  notes.          -> show discovered clues'), nl,
     write('  time.           -> check the clock (midnight is the deadline)'), nl,
-    write('  reassure(X).    -> deepen trust with a character'), nl,
-    write('  confide(X).     -> share what you have learned'), nl,
+    write('  reassure.        -> deepen trust with nearby character'), nl,
+    write('  confide.         -> share what you have learned with nearby character'), nl,
     write('  help.           -> show this list'), nl,
     write('  quit.           -> quit the game'), nl,
     write('-------------------------------------------------------'), nl,

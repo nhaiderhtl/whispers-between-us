@@ -1,4 +1,4 @@
-# GAME_DESIGN — Whispers Between Us
+    # GAME_DESIGN — Whispers Between Us
 
 > Developer reference. Keep in sync with game.pl at all times.
 
